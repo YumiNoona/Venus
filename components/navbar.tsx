@@ -1,47 +1,55 @@
+"use client";
+
 import Link from "next/link";
-import { getOptionalUser } from "@/lib/auth";
+import { Button } from "./ui";
+import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
-export default async function Navbar() {
-  const { user } = await getOptionalUser();
+export default function Navbar() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = createBrowserSupabaseClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+  }, []);
 
   return (
-    <header className="border-b border-[color:var(--border)] bg-[#050509]/80 backdrop-blur-md sticky top-0 z-30">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-[color:var(--text-primary)] transition-opacity hover:opacity-80"
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[color:var(--accent)] to-[#a07d4a] text-[10px] font-bold text-black">
+    <nav className="sticky top-0 z-40 h-16 border-b border-[color:var(--border)] bg-[color:var(--bg)]/80 backdrop-blur transition-impeccable">
+      <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2 transition-impeccable hover:opacity-80" prefetch>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[color:var(--accent)] text-xs font-bold text-black transition-impeccable hover:scale-110">
             V
+          </div>
+          <span className="text-sm font-semibold tracking-tight text-[color:var(--text-primary)]">
+            Venus
           </span>
-          <span>Venus</span>
         </Link>
-        <div className="flex items-center gap-3 text-xs">
+
+        {/* Auth Items */}
+        <div className="flex items-center gap-4">
           {user ? (
+            <Link href="/dashboard" prefetch>
+              <Button variant="primary" size="sm" className="gap-2">
+                Go to Dashboard
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          ) : (
             <>
-              <span className="hidden text-[color:var(--text-secondary)] md:inline">
-                {user.email}
-              </span>
-              <Link
-                href="/dashboard"
-                className="btn-primary text-xs px-3 py-1.5"
-              >
-                Dashboard
-                <ArrowRight className="h-3 w-3" />
+              <Link href="/login" className="text-sm font-medium text-[color:var(--text-secondary)] transition-impeccable hover:text-[color:var(--text-primary)]" prefetch>
+                Sign in
+              </Link>
+              <Link href="/signup" prefetch>
+                <Button variant="primary" size="sm">
+                  Get Started
+                </Button>
               </Link>
             </>
-          ) : (
-            <Link
-              href="/login"
-              className="btn-primary text-xs px-3 py-1.5"
-            >
-              Sign in
-              <ArrowRight className="h-3 w-3" />
-            </Link>
           )}
         </div>
       </div>
-    </header>
+    </nav>
   );
 }

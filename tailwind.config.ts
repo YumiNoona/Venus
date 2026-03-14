@@ -3,17 +3,19 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   darkMode: ["class"],
   content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}"
+    "app/**/*.{js,ts,jsx,tsx,mdx}",
+    "components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        background: "#0B0B0C",
-        card: "#111214",
-        border: "#1E1E22",
-        accent: "#C9A46C",
-        "accent-soft": "#C9A46C1A"
+        background: "var(--bg)",
+        surface: "var(--surface)",
+        border: "var(--border)",
+        accent: "var(--accent)",
+        "accent-hover": "var(--accent-hover)",
       },
       borderRadius: {
         lg: "14px",

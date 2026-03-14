@@ -1,7 +1,8 @@
-import "@/styles/globals.css";
+import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,12 +21,13 @@ export default function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} page-shell antialiased font-sans`}
-        style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+        className={`${inter.variable} min-h-screen bg-[color:var(--bg)] antialiased font-sans`}
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="dark">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

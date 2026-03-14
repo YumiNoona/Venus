@@ -1,168 +1,224 @@
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+"use client";
+
+import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ReactNode } from "react";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-/* ─── Button ─────────────────────────────────────────────── */
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-lg border font-medium transition-all duration-150 ease-subtle disabled:opacity-50 disabled:pointer-events-none cursor-pointer",
-  {
-    variants: {
-      variant: {
-        default:
-          "border-[color:var(--border)] bg-[#15161a] text-[color:var(--text-primary)] hover:border-[color:var(--accent)] hover:bg-[#191b20] hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_20px_rgba(0,0,0,0.3)] hover:scale-[1.02] active:scale-[0.98]",
-        accent:
-          "border-[color:var(--accent)] bg-gradient-to-br from-[color:var(--accent)] to-[#a07d4a] text-[#0b0b0c] font-semibold hover:shadow-[0_0_20px_rgba(201,164,108,0.2),0_4px_20px_rgba(0,0,0,0.3)] hover:scale-[1.02] active:scale-[0.98]",
-        ghost:
-          "border-transparent bg-transparent text-[color:var(--text-secondary)] hover:bg-[#15161a] hover:border-[color:var(--border)] hover:text-[color:var(--text-primary)]",
-        soft:
-          "border-transparent bg-[color:var(--accent-soft)] text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-black hover:scale-[1.02] active:scale-[0.98]",
-        danger:
-          "border-transparent bg-[color:var(--danger-soft)] text-[color:var(--danger)] hover:bg-[color:var(--danger)] hover:text-white hover:scale-[1.02] active:scale-[0.98]"
-      },
-      size: {
-        sm: "h-8 px-3 text-xs",
-        md: "h-9 px-4 text-[13px]",
-        lg: "h-10 px-5 text-sm"
-      }
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "md"
-    }
-  }
-);
+/* ─── BUTTON ─────────────────────────────────────────── */
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
-
-export function Button({
-  className,
-  variant,
-  size,
-  ...props
-}: ButtonProps) {
-  return (
-    <button
-      className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
-    />
-  );
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
+  isLoading?: boolean;
 }
 
-/* ─── Card ───────────────────────────────────────────────── */
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = "primary", size = "md", isLoading, children, ...props }, ref) => {
+    const variants = {
+      primary: "bg-[color:var(--accent)] text-black font-semibold hover:bg-[color:var(--accent-hover)]",
+      secondary: "border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--text-primary)] hover:bg-[color:var(--surface-hover)]",
+      ghost: "text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-primary)]",
+      danger: "bg-[color:var(--danger-soft)] text-red-500 hover:bg-red-500 hover:text-white"
+    };
 
-export function Card({
+    const sizes = {
+      sm: "h-8 px-3 text-xs",
+      md: "h-10 px-4 text-sm",
+      lg: "h-12 px-6 text-base",
+    };
+
+    return (
+      <button
+        ref={ref}
+        disabled={isLoading}
+        className={cn(
+          "inline-flex items-center justify-center rounded-md transition-impeccable",
+          "hover:translate-y-[-1px] active:scale-[0.98]",
+          variants[variant],
+          sizes[size],
+          isLoading && "opacity-70 cursor-not-allowed",
+          className
+        )}
+        {...props}
+      >
+        {isLoading ? (
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        ) : (
+          children
+        )}
+      </button>
+    );
+  }
+);
+Button.displayName = "Button";
+
+/* ─── CARD ───────────────────────────────────────────── */
+
+export const Card = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 shadow-sm",
+      "transition-impeccable hover:translate-y-[-2px] hover:shadow-xl hover:shadow-black/10 hover:border-neutral-700/50",
+      className
+    )}
+    {...props}
+  />
+);
+
+/* ─── INPUT ──────────────────────────────────────────── */
+
+export const Input = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement>
+>(({ className, type, ...props }, ref) => (
+  <input
+    type={type}
+    className={cn(
+      "flex h-10 w-full rounded-md border border-neutral-700 bg-[color:var(--bg)] px-3 py-2 text-sm text-[color:var(--text-primary)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[color:var(--text-secondary)] focus-visible:outline-none focus-visible:border-[color:var(--accent)] disabled:cursor-not-allowed disabled:opacity-50 transition-impeccable",
+      className
+    )}
+    ref={ref}
+    {...props}
+  />
+));
+Input.displayName = "Input";
+
+/* ─── TEXTAREA ───────────────────────────────────────── */
+
+export const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>(({ className, ...props }, ref) => (
+  <textarea
+    className={cn(
+      "flex min-h-[80px] w-full rounded-md border border-neutral-700 bg-[color:var(--bg)] px-3 py-2 text-sm text-[color:var(--text-primary)] placeholder:text-[color:var(--text-secondary)] focus-visible:outline-none focus-visible:border-[color:var(--accent)] disabled:cursor-not-allowed disabled:opacity-50 transition-impeccable",
+      className
+    )}
+    ref={ref}
+    {...props}
+  />
+));
+Textarea.displayName = "Textarea";
+
+/* ─── LABEL ──────────────────────────────────────────── */
+
+export const Label = React.forwardRef<
+  HTMLLabelElement,
+  React.LabelHTMLAttributes<HTMLLabelElement>
+>(({ className, ...props }, ref) => (
+  <label
+    ref={ref}
+    className={cn(
+      "text-sm font-medium leading-none text-[color:var(--text-secondary)] peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      className
+    )}
+    {...props}
+  />
+));
+Label.displayName = "Label";
+
+/* ─── BADGE ──────────────────────────────────────────── */
+
+export const Badge = ({
+  className,
+  variant = "default",
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  variant?: "default" | "success" | "accent";
+}) => {
+  const variants = {
+    default: "border-neutral-800 bg-neutral-900 text-neutral-400",
+    success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
+    accent: "border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 text-[color:var(--accent)]",
+  };
+
   return (
     <div
       className={cn(
-        "glass-panel relative overflow-hidden transition-all duration-200 ease-subtle hover:border-[color:var(--border-hover)]",
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider transition-colors",
+        variants[variant],
         className
       )}
       {...props}
     />
   );
-}
+};
 
-/* ─── Input ──────────────────────────────────────────────── */
-
-export function Input(
-  props: React.InputHTMLAttributes<HTMLInputElement>
-) {
-  return (
-    <input
-      className="input-field"
-      {...props}
-    />
-  );
-}
-
-/* ─── Textarea ───────────────────────────────────────────── */
-
-export function Textarea(
-  props: React.TextareaHTMLAttributes<HTMLTextAreaElement>
-) {
-  return (
-    <textarea
-      className="input-field resize-none"
-      {...props}
-    />
-  );
-}
-
-/* ─── Label ──────────────────────────────────────────────── */
-
-export function Label({
-  children,
-  ...props
-}: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return (
-    <label
-      className="mb-1.5 inline-block text-xs font-medium text-[color:var(--text-secondary)]"
-      {...props}
-    >
-      {children}
-    </label>
-  );
-}
-
-/* ─── Badge ──────────────────────────────────────────────── */
-
-export function Badge({
-  children,
-  variant = "default"
-}: {
-  children: ReactNode;
-  variant?: "default" | "success" | "accent";
-}) {
-  return (
-    <span
-      className={cn("badge", {
-        "badge-default": variant === "default",
-        "badge-success": variant === "success",
-        "badge-accent": variant === "accent"
-      })}
-    >
-      {children}
-    </span>
-  );
-}
-
-/* ─── Dialog ─────────────────────────────────────────────── */
+/* ─── DIALOG / MODAL ────────────────────────────────── */
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
 
-export function DialogContent({
-  children
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in data-[state=closed]:fade-out duration-200" />
-      <DialogPrimitive.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 origin-center animate-in fade-in-0 zoom-in-[0.98] rounded-xl border border-[color:var(--border)] bg-[color:var(--card)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.5)] duration-200 ease-subtle">
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-md p-1 text-[color:var(--text-secondary)] transition-colors hover:bg-[#15161a] hover:text-[color:var(--text-primary)]">
-          <X className="h-4 w-4" />
-        </DialogPrimitive.Close>
-        {children}
-      </DialogPrimitive.Content>
-    </DialogPrimitive.Portal>
-  );
-}
+export const DialogPortal = ({
+  children,
+  ...props
+}: DialogPrimitive.DialogPortalProps) => (
+  <DialogPrimitive.Portal {...props}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center sm:items-center">
+      {children}
+    </div>
+  </DialogPrimitive.Portal>
+);
 
-/* ─── Separator ──────────────────────────────────────────── */
+export const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-all duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    )}
+    {...props}
+  />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-export function Separator({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn("h-px w-full bg-[color:var(--border)]", className)}
-    />
-  );
-}
+export const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(
+        "fixed z-50 grid w-full max-w-md gap-6 border border-neutral-800 bg-[color:var(--surface)] p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-xl",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+        <X className="h-4 w-4 text-[color:var(--text-secondary)]" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
+  </DialogPortal>
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
+
+/* ─── SEPARATOR ───────────────────────────────────────── */
+
+export const Separator = ({
+  className,
+  orientation = "horizontal",
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  orientation?: "horizontal" | "vertical";
+}) => (
+  <div
+    className={cn(
+      "shrink-0 bg-neutral-800",
+      orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+      className
+    )}
+    {...props}
+  />
+);
