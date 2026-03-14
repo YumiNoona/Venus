@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0b0b0c;
+  --card: #111214;
+  --border: #1e1e22;
+  --accent: #c9a46c;
+  --accent-soft: #c9a46c1a;
+  --text-primary: #e5e5e5;
+  --text-secondary: #9ca3af;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-[color:var(--background)] text-[color:var(--text-primary)];
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Geist",
+    sans-serif;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+.glass-panel {
+  @apply bg-[color:var(--card)] border border-[color:var(--border)] rounded-xl;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-md border border-[color:var(--border)] bg-[#15161a] px-4 py-2 text-sm font-medium text-[color:var(--text-primary)] transition-all duration-150 ease-subtle hover:border-[color:var(--accent)] hover:bg-[#191b20] hover:text-[color:var(--text-primary)] hover:shadow-subtle hover:scale-[1.02] active:scale-[0.99];
+}
+
+.btn-soft {
+  @apply inline-flex items-center justify-center rounded-md border border-transparent bg-[color:var(--accent-soft)] px-3 py-1.5 text-xs font-medium text-[color:var(--accent)] transition-all duration-150 ease-subtle hover:bg-[color:var(--accent)] hover:text-black hover:scale-[1.02] active:scale-[0.99];
+}
+
+.page-shell {
+  @apply min-h-screen bg-[color:var(--background)] text-[color:var(--text-primary)];
+}
+
+.fade-in {
+  @apply animate-in fade-in duration-150 ease-subtle;
+}
+
