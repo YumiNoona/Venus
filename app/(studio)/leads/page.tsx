@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth";
+export const dynamic = "force-dynamic";
 import { Sidebar } from "@/components/sidebar";
 import { Badge, Button } from "@/components/ui";
 import Link from "next/link";

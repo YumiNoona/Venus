@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth";
+export const dynamic = "force-dynamic";
 import { Sidebar } from "@/components/sidebar";
 import { Card, Button, Label } from "@/components/ui";
 import { User, Mail, Settings, Shield, Clock } from "lucide-react";
