@@ -44,7 +44,7 @@ export function LeadModal({
 
     const supabase = createBrowserSupabaseClient();
 
-    const { error: insertError } = await supabase
+    const { error: insertError } = await (supabase as any)
       .from("leads")
       .insert({
         project_id: projectId,

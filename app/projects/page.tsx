@@ -2,16 +2,19 @@ import { requireUser } from "@/lib/auth";
 import { Sidebar } from "@/components/sidebar";
 import { ProjectCard } from "@/components/project-card";
 import Link from "next/link";
-import { Button } from "@/components/ui";
+import type { Database } from "@/types/database";
 
 export default async function ProjectsPage() {
   const { supabase, user } = await requireUser();
 
-  const { data: projects } = await supabase
+  const { data } = await supabase
     .from("projects")
     .select("id,name,slug,thumbnail_dark,short_description,published")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+
+  const projects =
+    (data as Database["public"]["Tables"]["projects"]["Row"][]) ?? [];
 
   return (
     <div className="flex min-h-screen">
@@ -26,9 +29,9 @@ export default async function ProjectsPage() {
               Each project becomes a calm, shareable client experience.
             </p>
           </div>
-          <Button asChild>
-            <Link href="/projects/new">New project</Link>
-          </Button>
+          <Link href="/projects/new" className="btn-primary">
+            New project
+          </Link>
         </header>
         <section className="mt-8">
           {projects && projects.length > 0 ? (
@@ -52,9 +55,9 @@ export default async function ProjectsPage() {
                 Start with a single hero project. Venus will handle the
                 storytelling and lead capture.
               </p>
-              <Button asChild size="sm">
-                <Link href="/projects/new">Create your first project</Link>
-              </Button>
+              <Link href="/projects/new" className="btn-primary text-xs px-3 py-1.5">
+                Create your first project
+              </Link>
             </div>
           )}
         </section>

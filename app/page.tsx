@@ -1,6 +1,5 @@
 import Navbar from "@/components/navbar";
 import Link from "next/link";
-import { Button } from "@/components/ui";
 
 export default function HomePage() {
   return (
@@ -24,9 +23,9 @@ export default function HomePage() {
             </p>
           </section>
           <section className="flex flex-wrap items-center gap-4 text-sm">
-            <Button asChild>
-              <Link href="/signup">Create studio account</Link>
-            </Button>
+            <Link href="/signup" className="btn-primary">
+              Create studio account
+            </Link>
             <Link
               href="/login"
               className="text-xs text-[color:var(--text-secondary)] underline-offset-4 hover:text-[color:var(--text-primary)] hover:underline"

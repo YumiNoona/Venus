@@ -2,6 +2,7 @@ import { requireUser } from "@/lib/auth";
 import { Sidebar } from "@/components/sidebar";
 import { ProjectForm } from "@/components/project-form";
 import { notFound } from "next/navigation";
+import type { Database } from "@/types/database";
 
 interface EditProjectPageProps {
   params: { id: string };
@@ -12,12 +13,15 @@ export default async function EditProjectPage({
 }: EditProjectPageProps) {
   const { supabase, user } = await requireUser();
 
-  const { data: project } = await supabase
+  const { data } = await supabase
     .from("projects")
     .select("*")
     .eq("id", params.id)
     .eq("user_id", user.id)
     .maybeSingle();
+
+  const project =
+    data as Database["public"]["Tables"]["projects"]["Row"] | null;
 
   if (!project) {
     notFound();

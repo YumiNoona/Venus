@@ -22,11 +22,13 @@ export async function POST(request: NextRequest) {
   const ip = ipHeader ? ipHeader.split(",")[0]?.trim() ?? null : null;
   const device = request.headers.get("user-agent") ?? null;
 
-  await supabase.from("visitors").insert({
-    project_id: projectId,
-    ip,
-    device
-  });
+  await (supabase as any)
+    .from("visitors")
+    .insert({
+      project_id: projectId,
+      ip,
+      device
+    });
 
   return NextResponse.json({ ok: true });
 }

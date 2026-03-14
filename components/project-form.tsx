@@ -81,7 +81,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     let finalSlug = values.slug || slugify(values.name);
     try {
       for (let attempt = 0; attempt < 3; attempt += 1) {
-        const { data: existing } = await supabase
+        const { data: existing } = await (supabase as any)
           .from("projects")
           .select("id")
           .eq("slug", finalSlug)
@@ -130,14 +130,14 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     let errorResult: { message: string } | null = null;
 
     if (values.id) {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("projects")
         .update(payload)
         .eq("id", values.id)
         .eq("user_id", userId);
       errorResult = error;
     } else {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("projects")
         .insert({ ...payload, user_id: userId });
       errorResult = error;

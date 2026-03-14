@@ -33,7 +33,7 @@ export default function SignupPage() {
       return;
     }
 
-    await supabase
+    await (supabase as any)
       .from("users")
       .insert({
         id: data.user.id,

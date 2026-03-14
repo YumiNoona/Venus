@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { LeadModal } from "@/components/lead-modal";
 import { VisitorTracker } from "@/components/visitor-tracker";
+import type { Database } from "@/types/database";
 
 interface ProjectPublicPageProps {
   params: { slug: string };
@@ -13,7 +14,7 @@ export default async function ProjectPublicPage({
 }: ProjectPublicPageProps) {
   const supabase = await createServerSupabaseClient();
 
-  const { data: project } = await supabase
+  const { data } = await supabase
     .from("projects")
     .select(
       "id,name,slug,thumbnail_dark,short_description,long_description,stream_url"
@@ -21,6 +22,9 @@ export default async function ProjectPublicPage({
     .eq("slug", params.slug)
     .eq("published", true)
     .maybeSingle();
+
+  const project =
+    data as Database["public"]["Tables"]["projects"]["Row"] | null;
 
   if (!project) {
     notFound();
