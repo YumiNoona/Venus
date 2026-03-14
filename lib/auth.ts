@@ -23,3 +23,15 @@ export async function getOptionalUser() {
   return { supabase, user };
 }
 
+export async function getUserProfile() {
+  const { supabase, user } = await requireUser();
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  return { supabase, user, profile };
+}
+

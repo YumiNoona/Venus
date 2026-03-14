@@ -40,22 +40,21 @@ export function LeadModal({
     }
 
     setLoading(true);
-    const supabase = createBrowserSupabaseClient();
+    
+    // Construct FormData for the server action
+    const formData = new FormData();
+    formData.append("projectId", projectId);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phone", phone);
 
-    const { error: insertError } = await (supabase as any)
-      .from("leads")
-      .insert({
-        project_id: projectId,
-        name,
-        phone,
-        email,
-        verified: false
-      });
+    const { submitLead } = await import("@/lib/actions/leads");
+    const result = await submitLead(formData);
 
     setLoading(false);
 
-    if (insertError) {
-      setError(insertError.message);
+    if (!result.success) {
+      setError(result.error || "Failed to submit inquiry.");
       return;
     }
 

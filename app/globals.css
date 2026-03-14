@@ -13,6 +13,7 @@
   --bg: #0B0B0C;
   --surface: #111214;
   --surface-hover: #151618;
+  --surface-raised: #1A1B1E;
   --border: #1E1E22;
 
   --text-primary: #E5E5E5;
@@ -28,6 +29,7 @@
   --bg: #F7F7F8;
   --surface: #FFFFFF;
   --surface-hover: #FAFAFA;
+  --surface-raised: #FFFFFF;
   --border: #E6E6E8;
 
   --text-primary: #111111;

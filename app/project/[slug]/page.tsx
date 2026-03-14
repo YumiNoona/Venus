@@ -15,11 +15,12 @@ interface ProjectPublicPageProps {
 export async function generateMetadata({
   params
 }: ProjectPublicPageProps): Promise<Metadata> {
+  const { slug } = await params;
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase
     .from("projects")
     .select("name,short_description")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("published", true)
     .maybeSingle();
 
@@ -34,11 +35,12 @@ export async function generateMetadata({
 export default async function ProjectPublicPage({
   params
 }: ProjectPublicPageProps) {
+  const { slug } = await params;
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase
     .from("projects")
     .select("id,name,slug,thumbnail_dark,short_description,long_description,stream_url")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("published", true)
     .maybeSingle();
 

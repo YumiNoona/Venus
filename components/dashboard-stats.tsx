@@ -6,37 +6,45 @@ import { Layers, Users, Eye } from "lucide-react";
 interface DashboardStatsProps {
   totalProjects: number;
   totalLeads: number;
-  recentVisitors: number;
+  totalVisitors: number;
+  conversionRate: number;
 }
 
 export function DashboardStats({
   totalProjects,
   totalLeads,
-  recentVisitors
+  totalVisitors,
+  conversionRate
 }: DashboardStatsProps) {
   const items = [
     {
-      label: "Active Projects",
+      label: "Projects",
       value: totalProjects,
-      description: "Projects published live",
+      description: "Total architectural showcases",
       icon: Layers,
     },
     {
-      label: "Captured Leads",
+      label: "Visitors",
+      value: totalVisitors,
+      description: "Lifetime viewing analytics",
+      icon: Eye,
+    },
+    {
+      label: "Leads",
       value: totalLeads,
-      description: "Interested client contacts",
+      description: "Interested client inquiries",
       icon: Users,
     },
     {
-      label: "Recent Visitors",
-      value: recentVisitors,
-      description: "Visits in the last 7 days",
-      icon: Eye,
+      label: "Conversion",
+      value: `${conversionRate.toFixed(1)}%`,
+      description: "Visitors to leads ratio",
+      icon: Users,
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {items.map((item, i) => (
         <Card key={item.label} className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-200" style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">

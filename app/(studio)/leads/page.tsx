@@ -1,134 +1,155 @@
 import { requireUser } from "@/lib/auth";
 export const dynamic = "force-dynamic";
-import { Sidebar } from "@/components/sidebar";
-import { Badge, Button } from "@/components/ui";
-import Link from "next/link";
-import { Users, Mail, Phone, Calendar, ArrowRight } from "lucide-react";
+import { Badge, Button, Card, Separator } from "@/components/ui";
+import { Mail, Phone, Calendar, ArrowRight, UserCheck, Trash2, CheckCircle2, Filter } from "lucide-react";
+import { LeadTableActions } from "./lead-actions";
 
-interface LeadRow {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  created_at: string | null;
-  project: {
-    name: string;
-  } | null;
+interface LeadsPageProps {
+  searchParams: Promise<{ filter?: string }>;
 }
 
-export default async function LeadsPage() {
+export default async function LeadsPage({ searchParams }: LeadsPageProps) {
   const { supabase, user } = await requireUser();
+  const params = await searchParams;
+  const filter = params.filter || "all";
 
-  // Fetch projects owned by user to filter leads
-  const { data: userProjects } = await supabase
+  // 1. Fetch user's project IDs to scope leads
+  const { data: userProjects } = (await supabase
     .from("projects")
     .select("id")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)) as any;
 
-  const projectIds = (userProjects ?? []).map((p: any) => p.id);
-  let leads: LeadRow[] = [];
+  const projectIds = (userProjects || []).map((p: any) => p.id);
 
-  if (projectIds.length > 0) {
-    const { data: leadData } = await supabase
-      .from("leads")
-      .select("id,name,email,phone,created_at,project:projects(name)")
-      .in("project_id", projectIds)
-      .order("created_at", { ascending: false })
-      .limit(100);
+  let leadsQuery = supabase
+    .from("leads")
+    .select("*, project:projects(name)")
+    .in("project_id", projectIds)
+    .order("created_at", { ascending: false });
 
-    leads = (leadData as LeadRow[]) ?? [];
+  if (filter === "verified") {
+    leadsQuery = leadsQuery.eq("verified", true);
   }
 
-  return (
-    <div className="page-container space-y-10">
-          {/* Header */}
-          <header className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--text-primary)]">
-                Client Leads
-              </h1>
-              <p className="text-sm text-[color:var(--text-secondary)]">
-                Manage and track potential clients who explored your projects.
-              </p>
-            </div>
-            <Badge variant="accent" className="font-mono">{leads.length} Total</Badge>
-          </header>
+  const { data: leads } = (await leadsQuery) as any;
 
-          {/* Table section */}
-          <section>
-            <div className="rounded-xl border border-neutral-800 bg-[color:var(--surface)] overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-neutral-900/50 border-b border-neutral-800">
-                      <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[color:var(--text-secondary)]">Lead info</th>
-                      <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[color:var(--text-secondary)]">Project</th>
-                      <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[color:var(--text-secondary)]">Contact Details</th>
-                      <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[color:var(--text-secondary)] text-right">Captured</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-neutral-800">
-                    {leads.length > 0 ? (
-                      leads.map((lead) => (
-                        <tr key={lead.id} className="group transition-colors hover:bg-neutral-900/50">
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-900 border border-neutral-800 text-xs font-semibold text-[color:var(--accent)] group-hover:border-[color:var(--accent)]/30 transition-colors">
-                                {lead.name.charAt(0).toUpperCase()}
-                              </div>
-                              <span className="text-sm font-medium text-[color:var(--text-primary)]">{lead.name}</span>
+  const leadsList = leads || [];
+
+  return (
+    <div className="page-container space-y-10 pb-20">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black tracking-tight text-[color:var(--text-primary)]">
+            Client Leads
+          </h1>
+          <p className="text-sm text-[color:var(--text-secondary)]">
+            Review and manage inquiries from your project showcases.
+          </p>
+        </div>
+        
+        {/* Filter Controls (Simple Tabs) */}
+        <div className="flex items-center gap-1 p-1 bg-neutral-900/50 border border-neutral-800 rounded-lg">
+           <a href="/leads">
+             <Button 
+                variant={filter === "all" ? "secondary" : "ghost"} 
+                size="sm" 
+                className="text-[10px] uppercase font-bold tracking-widest h-8"
+              >
+               All Leads
+             </Button>
+           </a>
+           <a href="/leads?filter=verified">
+             <Button 
+                variant={filter === "verified" ? "secondary" : "ghost"} 
+                size="sm" 
+                className="text-[10px] uppercase font-bold tracking-widest h-8"
+              >
+               Verified
+             </Button>
+           </a>
+        </div>
+      </header>
+
+      {/* Table Section */}
+      {leadsList.length > 0 ? (
+        <Card className="p-0 overflow-hidden border-neutral-800 bg-neutral-900/20 backdrop-blur-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-neutral-800 bg-black/20">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500">Contact</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500">Project Attribution</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500 text-center">Status</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500 text-right">Captured</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-800">
+                {leadsList.map((lead: any) => (
+                  <tr key={lead.id} className="group hover:bg-neutral-800/30 transition-colors">
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                         <div className="h-8 w-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-bold text-[color:var(--accent)]">
+                            {lead.name.charAt(0).toUpperCase()}
+                         </div>
+                         <div className="flex flex-col">
+                            <span className="text-sm font-bold text-[color:var(--text-primary)]">{lead.name}</span>
+                            <div className="flex items-center gap-3 mt-0.5">
+                               <span className="text-[10px] text-neutral-500 flex items-center gap-1">
+                                  <Mail className="h-2.5 w-2.5" /> {lead.email}
+                               </span>
+                               {lead.phone && (
+                                 <span className="text-[10px] text-neutral-500 flex items-center gap-1">
+                                    <Phone className="h-2.5 w-2.5" /> {lead.phone}
+                                 </span>
+                               )}
                             </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="text-sm text-[color:var(--text-secondary)] truncate max-w-[180px]">
-                              {lead.project?.name ?? "—"}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="space-y-1">
-                              {lead.email && (
-                                <div className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-                                  <Mail className="h-3 w-3" />
-                                  {lead.email}
-                                </div>
-                              )}
-                              {lead.phone && (
-                                <div className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-                                  <Phone className="h-3 w-3" />
-                                  {lead.phone}
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5 text-right">
-                            <div className="inline-flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-                              <Calendar className="h-3 w-3" />
-                              {lead.created_at ? new Date(lead.created_at).toLocaleDateString() : '—'}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={4} className="px-6 py-20 text-center">
-                          <div className="flex flex-col items-center justify-center space-y-3">
-                            <Users className="h-8 w-8 text-neutral-800" />
-                            <div className="space-y-1">
-                              <p className="text-sm font-medium text-[color:var(--text-primary)]">No leads captured yet</p>
-                              <p className="text-xs text-[color:var(--text-secondary)]">Share your project links to start receiving client interest.</p>
-                            </div>
-                            <Link href="/projects" className="pt-2">
-                              <Button variant="secondary" size="sm">Go to Projects</Button>
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
+                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                       <Badge variant="default" className="text-[10px] border-neutral-800 bg-neutral-900">
+                          {lead.project?.name || "Deleted Project"}
+                       </Badge>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                       {lead.verified ? (
+                         <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
+                            <CheckCircle2 className="h-3 w-3" /> Verified
+                         </div>
+                       ) : (
+                         <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+                            Pending
+                         </div>
+                       )}
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                       <div className="flex items-center justify-end gap-2 text-xs text-neutral-500">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {new Date(lead.created_at).toLocaleDateString()}
+                       </div>
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                        <LeadTableActions leadId={lead.id} verified={lead.verified} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-20 flex flex-col items-center justify-center text-center space-y-6 border-dashed border-neutral-800 bg-neutral-900/20">
+          <div className="h-16 w-16 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center">
+             <UserCheck className="h-8 w-8 text-neutral-700" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold">No Leads Captured</h2>
+            <p className="text-sm text-neutral-500 max-w-sm">When visitors submit inquiries on your project pages, they will appear here.</p>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

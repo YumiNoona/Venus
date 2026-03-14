@@ -43,6 +43,12 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     password: initial?.password ?? "",
     published: initial?.published ?? false
   });
+
+  const [thumbnailLightFile, setThumbnailLightFile] = useState<File | null>(null);
+  const [thumbnailDarkFile, setThumbnailDarkFile] = useState<File | null>(null);
+  const [lightPreview, setLightPreview] = useState<string | null>(initial?.thumbnail_light ?? null);
+  const [darkPreview, setDarkPreview] = useState<string | null>(initial?.thumbnail_dark ?? null);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,6 +63,25 @@ export function ProjectForm({ initial }: ProjectFormProps) {
 
   function handleChange(field: keyof ProjectFormValues, value: string | boolean) {
     setValues((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleFileChange(theme: "light" | "dark", file: File | null) {
+    if (file && file.size > 2 * 1024 * 1024) {
+      setError(`${theme === "light" ? "Light" : "Dark"} cover must be under 2MB`);
+      return;
+    }
+    setError(null);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (theme === "light") {
+        setThumbnailLightFile(file);
+        setLightPreview(reader.result as string);
+      } else {
+        setThumbnailDarkFile(file);
+        setDarkPreview(reader.result as string);
+      }
+    };
+    if (file) reader.readAsDataURL(file);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -74,12 +99,70 @@ export function ProjectForm({ initial }: ProjectFormProps) {
       return;
     }
 
+    let projectId = values.id;
+
+    // 1. If new project, insert first to get ID
+    if (!projectId) {
+      const { data, error } = await (supabase as any)
+        .from("projects")
+        .insert({
+          user_id: userId,
+          name: values.name,
+          slug: values.slug || slugify(values.name),
+          short_description: values.short_description || null,
+          long_description: values.long_description || null,
+          stream_url: values.stream_url || null,
+          auth_type: values.auth_type,
+          password: values.auth_type === "password" ? values.password : null,
+          published: values.published
+        })
+        .select()
+        .single();
+
+      if (error) {
+        setSaving(false);
+        setError(error.message);
+        return;
+      }
+      projectId = data.id;
+    }
+
+    // 2. Upload thumbnails if files selected
+    let updatedLightUrl = values.thumbnail_light;
+    let updatedDarkUrl = values.thumbnail_dark;
+
+    if (thumbnailLightFile) {
+      const path = `${projectId}/light.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("project-thumbnails")
+        .upload(path, thumbnailLightFile, { upsert: true });
+
+      if (uploadError) {
+        console.error("Light upload error:", uploadError);
+      } else {
+        updatedLightUrl = supabase.storage.from("project-thumbnails").getPublicUrl(path).data.publicUrl;
+      }
+    }
+
+    if (thumbnailDarkFile) {
+      const path = `${projectId}/dark.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("project-thumbnails")
+        .upload(path, thumbnailDarkFile, { upsert: true });
+
+      if (uploadError) {
+        console.error("Dark upload error:", uploadError);
+      } else {
+        updatedDarkUrl = supabase.storage.from("project-thumbnails").getPublicUrl(path).data.publicUrl;
+      }
+    }
+
+    // 3. Update project with final payload (including new URLs if any)
     const payload = {
-      user_id: userId,
       name: values.name,
       slug: values.slug || slugify(values.name),
-      thumbnail_light: values.thumbnail_light || null,
-      thumbnail_dark: values.thumbnail_dark || null,
+      thumbnail_light: updatedLightUrl || null,
+      thumbnail_dark: updatedDarkUrl || null,
       short_description: values.short_description || null,
       long_description: values.long_description || null,
       stream_url: values.stream_url || null,
@@ -88,18 +171,15 @@ export function ProjectForm({ initial }: ProjectFormProps) {
       published: values.published
     };
 
-    let errorResult: any = null;
-    if (values.id) {
-      const { error } = await (supabase as any).from("projects").update(payload).eq("id", values.id).eq("user_id", userId);
-      errorResult = error;
-    } else {
-      const { error } = await (supabase as any).from("projects").insert(payload);
-      errorResult = error;
-    }
+    const { error: updateError } = await (supabase as any)
+      .from("projects")
+      .update(payload)
+      .eq("id", projectId)
+      .eq("user_id", userId);
 
     setSaving(false);
-    if (errorResult) {
-      setError(errorResult.message);
+    if (updateError) {
+      setError(updateError.message);
       return;
     }
 
@@ -234,25 +314,53 @@ export function ProjectForm({ initial }: ProjectFormProps) {
 
       {/* Sidebar preview/thumbnails */}
       <aside className="space-y-6">
-        <Card className="p-4 space-y-4">
-           <Label className="text-[10px] uppercase font-bold tracking-[0.2em]">Project Cover</Label>
-           <div className="aspect-[4/3] rounded-lg bg-neutral-900 border border-neutral-800 overflow-hidden relative flex items-center justify-center">
-              {values.thumbnail_dark ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={values.thumbnail_dark} alt="Preview" className="h-full w-full object-cover" />
-              ) : (
-                <Box className="h-8 w-8 text-neutral-800" />
-              )}
-           </div>
-           <div className="space-y-1.5">
-             <Label htmlFor="thumb_dark" className="text-xs">Dark Thumbnail URL</Label>
-             <Input 
-                id="thumb_dark"
-                value={values.thumbnail_dark}
-                onChange={(e) => handleChange("thumbnail_dark", e.target.value)}
-                placeholder="https://..."
-                className="h-8 text-[10px] font-mono"
-             />
+        <Card className="p-4 space-y-6">
+           <Label className="text-[10px] uppercase font-bold tracking-[0.2em]">Project Covers</Label>
+           
+           <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] text-neutral-500 uppercase tracking-widest">Light Theme Cover</Label>
+                <div className="aspect-[16/9] rounded-lg bg-neutral-900 border border-neutral-800 overflow-hidden relative group">
+                   {lightPreview ? (
+                      <img src={lightPreview} alt="Light Preview" className="h-full w-full object-cover" />
+                   ) : (
+                      <div className="h-full w-full flex items-center justify-center">
+                        <Box className="h-6 w-6 text-neutral-800" />
+                      </div>
+                   )}
+                   <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] uppercase font-bold text-white tracking-widest">Upload Light</span>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={(e) => handleFileChange("light", e.target.files?.[0] || null)}
+                      />
+                   </label>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] text-neutral-500 uppercase tracking-widest">Dark Theme Cover</Label>
+                <div className="aspect-[16/9] rounded-lg bg-neutral-900 border border-neutral-800 overflow-hidden relative group">
+                   {darkPreview ? (
+                      <img src={darkPreview} alt="Dark Preview" className="h-full w-full object-cover" />
+                   ) : (
+                      <div className="h-full w-full flex items-center justify-center">
+                        <Box className="h-6 w-6 text-neutral-800" />
+                      </div>
+                   )}
+                   <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] uppercase font-bold text-white tracking-widest">Upload Dark</span>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={(e) => handleFileChange("dark", e.target.files?.[0] || null)}
+                      />
+                   </label>
+                </div>
+              </div>
            </div>
         </Card>
 
@@ -265,9 +373,9 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                 <span>Stream Link</span>
                 {values.stream_url ? <Check className="h-2.5 w-2.5" /> : '—'}
               </div>
-              <div className={`flex items-center justify-between text-[10px] ${values.thumbnail_dark ? 'text-emerald-500' : 'text-neutral-600'}`}>
-                <span>Cover Image</span>
-                {values.thumbnail_dark ? <Check className="h-2.5 w-2.5" /> : '—'}
+              <div className={`flex items-center justify-between text-[10px] ${lightPreview && darkPreview ? 'text-emerald-500' : 'text-neutral-600'}`}>
+                <span>Covers Ready</span>
+                {lightPreview && darkPreview ? <Check className="h-2.5 w-2.5" /> : '—'}
               </div>
               <div className={`flex items-center justify-between text-[10px] ${values.published ? 'text-[color:var(--accent)] font-bold' : 'text-neutral-600'}`}>
                 <span>Production Live</span>

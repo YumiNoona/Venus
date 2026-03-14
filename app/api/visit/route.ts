@@ -22,11 +22,14 @@ export async function POST(request: NextRequest) {
   const ip = ipHeader ? ipHeader.split(",")[0]?.trim() ?? null : null;
   const device = request.headers.get("user-agent") ?? null;
 
+  const { hashIp } = await import("@/lib/utils/privacy");
+  const hashedIp = hashIp(ip);
+
   await (supabase as any)
     .from("visitors")
     .insert({
       project_id: projectId,
-      ip,
+      ip: hashedIp,
       device
     });
 

@@ -14,18 +14,21 @@ export interface Database {
           id: string;
           email: string | null;
           name: string | null;
+          avatar_url: string | null;
           created_at: string | null;
         };
         Insert: {
           id?: string;
           email?: string | null;
           name?: string | null;
+          avatar_url?: string | null;
           created_at?: string | null;
         };
         Update: {
           id?: string;
           email?: string | null;
           name?: string | null;
+          avatar_url?: string | null;
           created_at?: string | null;
         };
       };
