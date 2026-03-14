@@ -1,6 +1,12 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { ReactNode } from "react";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter"
+});
 
 export const metadata: Metadata = {
   title: "Venus · Architectural Experiences",
@@ -15,10 +21,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="page-shell antialiased">
+      <body
+        className={`${inter.variable} page-shell antialiased font-sans`}
+        style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+      >
         {children}
       </body>
     </html>
   );
 }
-

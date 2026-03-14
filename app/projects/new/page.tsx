@@ -14,8 +14,7 @@ export default async function NewProjectPage() {
             New project
           </h1>
           <p className="mt-1 text-xs text-[color:var(--text-secondary)]">
-            Define the story, preview the page, and publish when it feels
-            right.
+            Define the story, preview the page, and publish when it feels right.
           </p>
         </header>
         <ProjectForm />
@@ -23,4 +22,3 @@ export default async function NewProjectPage() {
     </div>
   );
 }
-

@@ -1,38 +1,43 @@
 import Link from "next/link";
 import { getOptionalUser } from "@/lib/auth";
+import { ArrowRight } from "lucide-react";
 
 export default async function Navbar() {
   const { user } = await getOptionalUser();
 
   return (
-    <header className="border-b border-[color:var(--border)]">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <header className="border-b border-[color:var(--border)] bg-[#050509]/80 backdrop-blur-md sticky top-0 z-30">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
         <Link
           href="/"
-          className="flex items-center gap-2 text-sm font-medium tracking-tight text-[color:var(--text-primary)]"
+          className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-[color:var(--text-primary)] transition-opacity hover:opacity-80"
         >
-          <span className="h-6 w-6 rounded-md bg-gradient-to-br from-[#1f2933] to-[#020617] ring-1 ring-[color:var(--border)]" />
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[color:var(--accent)] to-[#a07d4a] text-[10px] font-bold text-black">
+            V
+          </span>
           <span>Venus</span>
         </Link>
-        <div className="flex items-center gap-3 text-xs text-[color:var(--text-secondary)]">
+        <div className="flex items-center gap-3 text-xs">
           {user ? (
             <>
-              <span className="hidden md:inline">
+              <span className="hidden text-[color:var(--text-secondary)] md:inline">
                 {user.email}
               </span>
               <Link
                 href="/dashboard"
-                className="inline-flex h-8 items-center justify-center rounded-md border border-transparent px-3 text-xs font-medium text-[color:var(--text-secondary)] transition-all duration-150 ease-subtle hover:border-[color:var(--border)] hover:bg-[#15161a] hover:text-[color:var(--text-primary)]"
+                className="btn-primary text-xs px-3 py-1.5"
               >
                 Dashboard
+                <ArrowRight className="h-3 w-3" />
               </Link>
             </>
           ) : (
             <Link
               href="/login"
-              className="inline-flex h-8 items-center justify-center rounded-md border border-transparent px-3 text-xs font-medium text-[color:var(--text-secondary)] transition-all duration-150 ease-subtle hover:border-[color:var(--border)] hover:bg-[#15161a] hover:text-[color:var(--text-primary)]"
+              className="btn-primary text-xs px-3 py-1.5"
             >
               Sign in
+              <ArrowRight className="h-3 w-3" />
             </Link>
           )}
         </div>
@@ -40,5 +45,3 @@ export default async function Navbar() {
     </header>
   );
 }
-
-
