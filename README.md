@@ -25,7 +25,7 @@ Create a `.env.local` file with:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
 These are used in `lib/supabase-browser.ts` and `lib/supabase-server.ts` to create browser and server Supabase clients.
