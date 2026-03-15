@@ -124,3 +124,24 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
 }
+
+/* --- Phone Input Overrides --- */
+.phone-input-container {
+  @apply flex items-center h-14 bg-black/20 border border-neutral-800 rounded-md px-3 focus-within:border-[color:var(--accent)] transition-all;
+}
+
+.phone-input-container .PhoneInputInput {
+  @apply bg-transparent border-none text-sm text-[color:var(--text-primary)] w-full outline-none ml-2;
+}
+
+.phone-input-container .PhoneInputCountry {
+  @apply flex items-center gap-1;
+}
+
+.phone-input-container .PhoneInputCountrySelect {
+  @apply bg-neutral-900 text-white text-[10px] uppercase font-bold;
+}
+
+.inquiry-phone-input label {
+  @apply block;
+}

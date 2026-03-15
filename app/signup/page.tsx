@@ -25,10 +25,15 @@ export default function SignupPage() {
 
     const supabase = createBrowserSupabaseClient();
 
-    // 1. Auth account
+    // 1. Auth account (Database trigger handles public.users row)
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name,
+        }
+      }
     });
 
     if (signUpError) {
@@ -41,21 +46,6 @@ export default function SignupPage() {
     if (!user) {
       setLoading(false);
       setError("Registration failed. Please try again.");
-      return;
-    }
-
-    // 2. Profile row
-    const { error: profileError } = await (supabase as any)
-      .from("users")
-      .insert({
-        id: user.id,
-        email: user.email,
-        name: name,
-      });
-
-    if (profileError) {
-      setLoading(false);
-      setError(profileError.message);
       return;
     }
 

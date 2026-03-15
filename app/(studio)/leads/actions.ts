@@ -3,44 +3,103 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { revalidatePath } from "next/cache"
 
-/**
- * Marks a lead as verified.
- */
-export async function verifyLead(leadId: string) {
-  const supabase = (await createServerSupabaseClient()) as any
+export async function getLeads({
+  search,
+  projectId,
+  fromDate,
+  toDate
+}: {
+  search?: string;
+  projectId?: string;
+  fromDate?: string;
+  toDate?: string;
+}) {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
+  if (!user) throw new Error("Unauthorized");
+
+  const { data: userProjects } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("user_id", user.id);
+
+  const projectIds = (userProjects || []).map(p => p.id);
+  if (projectIds.length === 0) return [];
+
+  let query = supabase
+    .from("leads")
+    .select(`
+      id,
+      name,
+      email,
+      phone,
+      created_at,
+      project_id,
+      verified,
+      projects(name),
+      visitors(device)
+    `)
+    .in("project_id", projectIds)
+    .order("created_at", { ascending: false });
+
+  if (search) {
+    query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+  }
+
+  if (projectId && projectId !== "all") {
+    query = query.eq("project_id", projectId);
+  }
+
+  if (fromDate) {
+    query = query.gte("created_at", fromDate);
+  }
+
+  if (toDate) {
+    query = query.lte("created_at", toDate);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function verifyLead(leadId: string) {
+  const supabase = await createServerSupabaseClient();
   const { error } = await supabase
     .from("leads")
     .update({ verified: true })
-    .eq("id", leadId)
+    .eq("id", leadId);
 
-  if (error) {
-    console.error("Failed to verify lead:", error.message)
-    return { success: false, error: error.message }
-  }
-
-  revalidatePath("/leads")
-  revalidatePath("/dashboard")
-  return { success: true }
+  if (error) throw error;
+  revalidatePath("/leads");
+  return { success: true };
 }
 
-/**
- * Deletes a lead.
- */
 export async function deleteLead(leadId: string) {
-  const supabase = (await createServerSupabaseClient()) as any
-
+  const supabase = await createServerSupabaseClient();
   const { error } = await supabase
     .from("leads")
     .delete()
-    .eq("id", leadId)
+    .eq("id", leadId);
 
-  if (error) {
-    console.error("Failed to delete lead:", error.message)
-    return { success: false, error: error.message }
-  }
+  if (error) throw error;
+  revalidatePath("/leads");
+  return { success: true };
+}
 
-  revalidatePath("/leads")
-  revalidatePath("/dashboard")
-  return { success: true }
+export async function getAdminProjects() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select("id, name")
+    .eq("user_id", user.id)
+    .order("name");
+
+  if (error) throw error;
+  return data;
 }

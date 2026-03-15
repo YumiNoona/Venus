@@ -19,17 +19,17 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-forwarded-for") ??
     request.headers.get("x-real-ip") ??
     null;
-  const ip = ipHeader ? ipHeader.split(",")[0]?.trim() ?? null : null;
-  const device = request.headers.get("user-agent") ?? null;
+  const ip = ipHeader ? ipHeader.split(",")[0]?.trim() ?? "unknown" : "unknown";
+  const device = request.headers.get("user-agent") || "unknown";
 
-  const { hashIp } = await import("@/lib/utils/privacy");
-  const hashedIp = hashIp(ip);
+  const { hashIP } = await import("@/lib/utils/privacy");
+  const hashedIp = hashIP(ip || "unknown");
 
   await (supabase as any)
     .from("visitors")
     .insert({
       project_id: projectId,
-      ip: hashedIp,
+      ip_hash: hashedIp,
       device
     });
 

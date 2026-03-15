@@ -6,6 +6,9 @@
 -- Enable UUID generation
 create extension if not exists "uuid-ossp";
 
+-- ─── Enums ──────────────────────────────────────────────
+create type public.project_auth as enum ('public', 'password', 'otp');
+
 -- ─── Users ──────────────────────────────────────────────
 create table if not exists public.users (
   id         uuid primary key default uuid_generate_v4(),
@@ -25,9 +28,11 @@ create table if not exists public.projects (
   short_description text,
   long_description  text,
   stream_url        text,
-  auth_type         text not null default 'public' check (auth_type in ('public', 'password', 'otp')),
-  password          text,
+  auth_type         public.project_auth not null default 'public',
+  password_hash     text,
   published         boolean not null default false,
+  view_count        bigint not null default 0,
+  lead_count        bigint not null default 0,
   created_at        timestamptz default now()
 );
 
@@ -42,6 +47,7 @@ create table if not exists public.leads (
   phone      text,
   email      text,
   verified   boolean not null default false,
+  ip_hash    text,
   created_at timestamptz default now()
 );
 
@@ -52,7 +58,7 @@ create table if not exists public.visitors (
   id         uuid primary key default uuid_generate_v4(),
   project_id uuid not null references public.projects(id) on delete cascade,
   lead_id    uuid references public.leads(id) on delete set null,
-  ip         text,
+  ip_hash    text,
   device     text,
   visited_at timestamptz default now()
 );
@@ -66,12 +72,12 @@ create index if not exists idx_visitors_project_id on public.visitors(project_id
 -- ─── Users ──────────────────────────────────────────────
 alter table public.users enable row level security;
 
+-- Remove legacy manual insert policy since DB trigger handles it
+drop policy if exists "users_insert_own" on public.users;
+
 -- Users can read and update their own profile
 create policy "users_select_own" on public.users
   for select using (auth.uid() = id);
-
-create policy "users_insert_own" on public.users
-  for insert with check (auth.uid() = id);
 
 create policy "users_update_own" on public.users
   for update using (auth.uid() = id);
@@ -92,9 +98,9 @@ create policy "projects_update_own" on public.projects
 create policy "projects_delete_own" on public.projects
   for delete using (auth.uid() = user_id);
 
--- Public can read published projects (for the public project page)
-create policy "projects_select_published" on public.projects
-  for select using (published = true);
+-- Public can read published public projects (for the public project page)
+create policy "projects_select_public" on public.projects
+  for select using (published = true and auth_type = 'public');
 
 -- ─── Leads ──────────────────────────────────────────────
 alter table public.leads enable row level security;
@@ -125,3 +131,22 @@ create policy "visitors_select_owner" on public.visitors
       select id from public.projects where user_id = auth.uid()
     )
   );
+
+-- ─── Functions ──────────────────────────────────────────
+create or replace function public.increment_project_views(project_id uuid)
+returns void as $$
+begin
+  update public.projects
+  set view_count = view_count + 1
+  where id = project_id;
+end;
+$$ language plpgsql security definer;
+
+create or replace function public.increment_project_leads(project_id uuid)
+returns void as $$
+begin
+  update public.projects
+  set lead_count = lead_count + 1
+  where id = project_id;
+end;
+$$ language plpgsql security definer;

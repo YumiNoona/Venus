@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database";
+import type { Database } from "../types/database";
+import { type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -14,7 +15,7 @@ if (!supabaseUrl || !supabaseKey) {
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
 
-  return createServerClient<Database>(supabaseUrl, supabaseKey, {
+  return createServerClient<Database, "public">(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -35,7 +36,7 @@ export async function createServerSupabaseClient() {
         }
       }
     }
-  });
+  }) as unknown as SupabaseClient<Database>;
 }
 
 export async function createServerAdminClient() {

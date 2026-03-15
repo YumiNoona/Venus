@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Box, ShieldCheck } from "lucide-react";
 
 interface ProjectPublicPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
@@ -27,8 +27,8 @@ export async function generateMetadata({
   if (!data) return { title: "Not Found — Venus" };
 
   return {
-    title: `${(data as any).name} — Venus Experience`,
-    description: (data as any).short_description ?? "Explore this architectural project."
+    title: `${data.name} — Venus Experience`,
+    description: data.short_description ?? "Explore this architectural project."
   };
 }
 
@@ -44,7 +44,7 @@ export default async function ProjectPublicPage({
     .eq("published", true)
     .maybeSingle();
 
-  const project = data as Database["public"]["Tables"]["projects"]["Row"] | null;
+  const project = data;
   if (!project) notFound();
 
   return (

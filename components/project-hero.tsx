@@ -4,6 +4,8 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "./ui";
 import { ArrowDown, Play } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ThemeAwareImage } from "./theme-aware-image";
 
 interface ProjectHeroProps {
   name: string;
@@ -41,17 +43,14 @@ export function ProjectHero({
 
   return (
     <section className="relative h-[90vh] w-full overflow-hidden flex flex-col justify-center px-6">
-      {/* Background Image */}
+      {/* Background Image Container with Crossfade */}
       <div className="absolute inset-0 z-0">
-        {finalCover ? (
-          <img
-            src={finalCover}
-            alt={name}
-            className="h-full w-full object-cover grayscale-[10%] brightness-[0.7] transition-all duration-700"
-          />
-        ) : (
-          <div className="h-full w-full bg-neutral-900" />
-        )}
+        <ThemeAwareImage 
+          lightSrc={thumbnailLight}
+          darkSrc={thumbnailDark}
+          alt={name}
+          className="h-full w-full !aspect-auto"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
       </div>
 

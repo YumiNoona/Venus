@@ -1,24 +1,26 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { notFound } from "next/navigation"
 import { trackVisitor } from "./actions"
-import { submitLead } from "@/lib/actions/leads"
-import { Button, Separator, Card, Label, Input } from "@/components/ui"
-import { Metadata } from "next"
 import { ProjectHero } from "@/components/project-hero"
 import { MapPin, User, Maximize, Calendar, ArrowRight, Sparkles, Box } from "lucide-react"
+import { LeadForm } from "@/components/lead-form"
+import { Metadata } from "next"
+import { Card, Label, Input } from "@/components/ui"
+import { ThemeAwareImage } from "@/components/theme-aware-image"
 
 export const revalidate = 60 // ISR: Refresh cache every 60 seconds
 
 interface ProjectPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
-  const supabase = (await createServerSupabaseClient()) as any;
+  const { slug } = await params;
+  const supabase = await createServerSupabaseClient();
   const { data: project } = await supabase
     .from("projects")
     .select("name, short_description")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("published", true)
     .single()
 
@@ -31,7 +33,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const supabase = (await createServerSupabaseClient()) as any;
+  const { slug } = await params;
+  const supabase = await createServerSupabaseClient();
 
   const { data: project } = await supabase
     .from("projects")
@@ -45,14 +48,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       thumbnail_dark,
       published
     `)
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("published", true)
     .single()
 
   if (!project) return notFound()
 
   // Track visitor in the background
-  trackVisitor(project.id).catch(err => console.error("Track error:", err))
+  void trackVisitor(project.id)
 
   return (
     <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--text-primary)] selection:bg-[color:var(--accent)] selection:text-black scroll-smooth">
@@ -130,18 +133,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
            </div>
 
            <div className="space-y-8">
-              <div className="group relative aspect-[16/9] w-full rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950 shadow-2xl transition-impeccable hover:border-neutral-700">
-                {project.thumbnail_dark ? (
-                  <img src={project.thumbnail_dark} alt="Showcase" className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center">
-                    <Box className="h-16 w-16 text-neutral-900" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-end p-8 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                   <p className="text-xs font-bold uppercase tracking-widest text-white/80">Principal Exterior Visualization</p>
-                </div>
-              </div>
+              <ThemeAwareImage 
+                lightSrc={project.thumbnail_light}
+                darkSrc={project.thumbnail_dark}
+                alt="Principal Exterior Visualization"
+                aspectRatio="aspect-[16/9]"
+                className="w-full rounded-2xl shadow-2xl transition-impeccable hover:border-neutral-700"
+              />
            </div>
         </section>
 
@@ -191,36 +189,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
            <div className="lg:col-span-2">
              <Card className="p-8 md:p-12 border-neutral-800 bg-neutral-900/40 backdrop-blur-xl">
-               <form action={async (formData) => {
-                 "use server"
-                 await submitLead(formData);
-               }} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <input type="hidden" name="projectId" value={project.id} />
-                 
-                 <div className="space-y-2">
-                   <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 ml-1">Full Name</Label>
-                   <Input name="name" placeholder="John Doe" required className="bg-black/20 border-neutral-800 focus:border-[color:var(--accent)] h-14 text-sm" />
-                 </div>
-
-                 <div className="space-y-2">
-                   <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 ml-1">Work Email</Label>
-                   <Input name="email" type="email" placeholder="john@example.com" required className="bg-black/20 border-neutral-800 focus:border-[color:var(--accent)] h-14 text-sm" />
-                 </div>
-
-                 <div className="space-y-2 md:col-span-2">
-                   <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 ml-1">Phone Number (Optional)</Label>
-                   <Input name="phone" placeholder="+1 (555) 000-0000" className="bg-black/20 border-neutral-800 focus:border-[color:var(--accent)] h-14 text-sm" />
-                 </div>
-
-                 <div className="md:col-span-2 pt-4">
-                    <Button type="submit" size="lg" className="w-full h-14 shadow-lg shadow-[color:var(--accent)]/10 font-black uppercase text-[10px] tracking-[0.3em] transition-all hover:translate-y-[-2px]">
-                      Send Inquiry
-                    </Button>
-                    <p className="text-[10px] text-center text-neutral-600 mt-6 tracking-widest uppercase">
-                       Confidentiality guaranteed.
-                    </p>
-                 </div>
-               </form>
+               <LeadForm projectId={project.id} />
              </Card>
            </div>
         </section>

@@ -1,9 +1,12 @@
-import { createHash } from "crypto";
+import crypto from "crypto";
 
 /**
- * Hashes an IP address using SHA-256 for privacy compliance (GDPR).
+ * Anonymizes an IP address using SHA-256 hashing.
+ * This ensures GDPR compliance while still allowing for idempotent visitor tracking.
  */
-export function hashIp(ip: string | null): string | null {
-  if (!ip) return null;
-  return createHash("sha256").update(ip).digest("hex");
+export function hashIP(ip: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(ip)
+    .digest("hex");
 }

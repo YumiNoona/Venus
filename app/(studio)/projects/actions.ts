@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache"
  * Toggles a project's published status.
  */
 export async function toggleProjectStatus(projectId: string, currentStatus: boolean) {
-  const supabase = (await createServerSupabaseClient()) as any;
+  const supabase = await createServerSupabaseClient();
 
   const { error } = await supabase
     .from("projects")
@@ -29,7 +29,7 @@ export async function toggleProjectStatus(projectId: string, currentStatus: bool
  * Note: Database cascades will handle leads and visitors deletion.
  */
 export async function deleteProject(projectId: string) {
-  const supabase = (await createServerSupabaseClient()) as any;
+  const supabase = await createServerSupabaseClient();
 
   const { error } = await supabase
     .from("projects")
