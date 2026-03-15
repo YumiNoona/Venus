@@ -69,13 +69,13 @@ export function LeadForm({ projectId, onFinish }: LeadFormProps) {
       </div>
 
       <div className="space-y-2 md:col-span-2 inquiry-phone-input">
-        <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 ml-1">Phone Number (Optional)</Label>
+        <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary ml-1">Phone Number (Optional)</Label>
         <PhoneInput
           defaultCountry="IN"
           value={phone}
           onChange={setPhone}
           className="phone-input-container"
-          placeholder="Enter phone number"
+          placeholder="+91 98765 43210"
         />
       </div>
 

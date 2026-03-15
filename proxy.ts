@@ -2,111 +2,113 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(req: NextRequest) {
-  let res = NextResponse.next({
-    request: {
-      headers: req.headers,
-    },
-  });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return req.cookies.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
-          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
-          res = NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            res.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  // Refresh the session
-  const { data: { user } } = await supabase.auth.getUser();
-
   const url = req.nextUrl;
+  const pathname = url.pathname;
   const hostname = req.headers.get('host') || '';
 
-  // 1. Define your platform's apex domain
+  // 1. Precise Matcher Optimization
+  // Only target Studio routes for auth logic
+  const isStudioRoute = 
+    pathname.startsWith('/dashboard') || 
+    pathname.startsWith('/projects') || 
+    pathname.startsWith('/leads') || 
+    pathname.startsWith('/settings') || 
+    pathname.startsWith('/billing');
+
+  const isPublicRoute = ['/login', '/signup', '/verify-email', '/auth/callback'].includes(pathname);
+
+  // 2. High-Speed Cookie Gating (The "5ms" fast path)
+  if (isStudioRoute && !isPublicRoute) {
+    const sessionCookie = req.cookies.get("sb-access-token") || req.cookies.get("sb-refresh-token");
+    if (!sessionCookie) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    
+    // Valid session cookie exists, proceed to Supabase for heavy lifting (Session refresh/Email guard)
+    let res = NextResponse.next({
+      request: { headers: req.headers },
+    });
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return req.cookies.getAll(); },
+          setAll(cookiesToSet: any[]) {
+            cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
+            res = NextResponse.next({ request: { headers: req.headers } });
+            cookiesToSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
+          },
+        },
+      }
+    );
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 3. Email Confirmation Guard (Studio Only)
+    if (user && !user.email_confirmed_at && pathname !== '/verify-email') {
+      return NextResponse.redirect(new URL('/verify-email', req.url));
+    }
+
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
+
+    return res;
+  }
+
+  // 4. Subdomain Routing (Public Projects) - No Auth Logic Needed
   const platformDomain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'venusapp.in';
+  const isMainDomain = hostname === platformDomain || hostname === `www.${platformDomain}` || hostname === 'localhost:3000';
   
-  // 2. Extract current subdomain/hostname
   const currentHost = 
     process.env.NODE_ENV === "production" 
       ? hostname.replace(`.${platformDomain}`, "")
       : hostname.replace(`.localhost:3000`, "");
 
-  // 3. Prevent infinite loops and ignore main domain/common subdomains
-  const isMainDomain = hostname === platformDomain || hostname === `www.${platformDomain}` || hostname === 'localhost:3000';
   const isExcludedSubdomain = currentHost === "app" || currentHost === "api" || currentHost === "studio";
 
-  // 4. Email Confirmation Guard (Professional Auth Flow)
-  const publicRoutes = ['/login', '/signup', '/verify-email', '/auth/callback'];
-  const isPublicRoute = publicRoutes.includes(url.pathname);
-  
-  // If user is logged in but NOT confirmed, redirect them to verify-email if they try to access protected studio/dashboard routes
-  const isStudioRoute = isExcludedSubdomain || url.pathname.startsWith('/dashboard') || url.pathname.startsWith('/leads') || url.pathname.startsWith('/projects');
-  
-  if (user && !user.email_confirmed_at && isStudioRoute && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/verify-email', req.url));
-  }
-
   if (!isMainDomain && !isExcludedSubdomain) {
-     // 1. Check if this is a primary slug
-     const { data: project } = await supabase
+     // Public project hits skip the getUser() call entirely
+     const supabaseAnon = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { cookies: { getAll: () => req.cookies.getAll() } }
+     );
+
+     // Check for slug or redirect
+     const { data: project } = await supabaseAnon
        .from('projects')
        .select('id')
        .eq('slug', currentHost)
        .single();
 
      if (!project) {
-       // 2. Check for redirect
-       const { data: redirectData } = await (supabase as any)
+       const { data: redirectData } = await (supabaseAnon as any)
          .from('slug_redirects')
          .select('new_slug')
          .eq('old_slug', currentHost)
          .maybeSingle();
 
        if (redirectData) {
-         return NextResponse.redirect(new URL(`${url.protocol}//${redirectData.new_slug}.${platformDomain}${url.pathname === '/' ? '' : url.pathname}`), {
+         return NextResponse.redirect(new URL(`${url.protocol}//${redirectData.new_slug}.${platformDomain}${pathname === '/' ? '' : pathname}`), {
            status: 301
          });
        }
      }
 
-     // This is a project subdomain (e.g. serenity-villa.venusapp.io)
-     // Rewrite to /p/[slug] internally
-     if (!url.pathname.startsWith('/p/')) {
-       return NextResponse.rewrite(new URL(`/p/${currentHost}${url.pathname === '/' ? '' : url.pathname}`, req.url), {
-         request: {
-           headers: res.headers,
-         }
-       });
+     // Rewrite to /p/[slug]
+     if (!pathname.startsWith('/p/')) {
+       return NextResponse.rewrite(new URL(`/p/${currentHost}${pathname === '/' ? '' : pathname}`, req.url));
      }
   }
 
-  return res;
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|icon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

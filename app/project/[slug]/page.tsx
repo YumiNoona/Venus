@@ -12,6 +12,8 @@ interface ProjectPublicPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const runtime = "edge"
+
 export async function generateMetadata({
   params
 }: ProjectPublicPageProps): Promise<Metadata> {

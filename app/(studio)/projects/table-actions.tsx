@@ -99,7 +99,7 @@ export function ProjectTableActions({ projectId, published, slug }: ProjectTable
              <Button variant="ghost" onClick={() => setIsDeleting(false)} disabled={isLoading}>
                 Cancel
              </Button>
-             <Button variant="danger" onClick={handleDelete} isLoading={isLoading}>
+             <Button variant="danger" onClick={handleDelete} loading={isLoading}>
                 Confirm Delete
              </Button>
           </DialogFooter>

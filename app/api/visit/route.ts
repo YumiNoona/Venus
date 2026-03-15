@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   const device = request.headers.get("user-agent") || "unknown";
 
   const { hashIP } = await import("@/lib/utils/privacy");
-  const hashedIp = hashIP(ip || "unknown");
+  const hashedIp = await hashIP(ip || "unknown");
 
   await (supabase as any)
     .from("visitors")

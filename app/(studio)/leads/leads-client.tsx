@@ -1,26 +1,22 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Badge, Button, Card, Input } from "@/components/ui"
+import { Badge, Button, Card, Input, Separator, Skeleton } from "@/components/ui"
 import { 
   Mail, Phone, Calendar, Search, 
   Download, FileText, CheckCircle2, 
-  Filter, X, ChevronDown, Monitor
+  Filter, X, ChevronDown, Monitor,
+  Loader2
 } from "lucide-react"
 import { format } from "date-fns"
 import { LeadTableActions } from "./lead-actions"
-import { getLeads, verifyExportAccess } from "./actions"
-import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
+import { getLeads, getAdminProjects, verifyExportAccess } from "./actions"
 
-interface LeadsClientProps {
-  initialLeads: any[];
-  projects: any[];
-}
-
-export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
-  const [leads, setLeads] = useState(initialLeads)
-  const [loading, setLoading] = useState(false)
+export function LeadsClient() {
+  const [leads, setLeads] = useState<any[]>([])
+  const [projects, setProjects] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
   
   // Filters
   const [search, setSearch] = useState("")
@@ -28,8 +24,30 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
   const [fromDate, setFromDate] = useState("")
   const [toDate, setToDate] = useState("")
 
-  // Fetch data when filters change
+  // Initial load of both projects and leads (Parallel)
   useEffect(() => {
+    const initFetch = async () => {
+      try {
+        const [projectsData, leadsData] = await Promise.all([
+          getAdminProjects(),
+          getLeads({})
+        ]);
+        setProjects(projectsData);
+        setLeads(leadsData);
+      } catch (err) {
+        console.error("Initial load error:", err);
+      } finally {
+        setInitialLoading(false);
+        setLoading(false);
+      }
+    };
+    initFetch();
+  }, []);
+
+  // Filter updates
+  useEffect(() => {
+    if (initialLoading) return;
+
     const fetchFiltered = async () => {
       setLoading(true)
       try {
@@ -49,7 +67,7 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
     
     const timer = setTimeout(fetchFiltered, 500)
     return () => clearTimeout(timer)
-  }, [search, projectId, fromDate, toDate])
+  }, [search, projectId, fromDate, toDate, initialLoading])
 
   const exportCSV = async () => {
     if (leads.length === 0) return
@@ -97,27 +115,43 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
 
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (projectId !== "all") params.append("projectId", projectId);
-      if (fromDate) params.append("fromDate", fromDate);
-      if (toDate) params.append("toDate", toDate);
+      const { jsPDF } = await import("jspdf");
+      const autoTable = (await import("jspdf-autotable")).default;
+      const { getStudioProfile } = await import("./actions");
+      
+      const profile = await getStudioProfile();
+      const doc = new jsPDF();
+      
+      // Header
+      doc.setFontSize(22);
+      doc.text(profile.name, 14, 20);
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(`Project Report: ${projectId === "all" ? "All Projects" : (leads[0]?.projects?.name || "Selected Project")}`, 14, 28);
+      doc.text(`Generated: ${format(new Date(), "PPPpp")}`, 14, 34);
+      
+      const tableData = leads.map(l => [
+        l.name,
+        l.email,
+        l.phone || "-",
+        l.visitors?.[0]?.device || "unknown",
+        l.verified ? "Verified" : "Pending",
+        format(new Date(l.created_at), "MMM d, yyyy")
+      ]);
 
-      const response = await fetch(`/api/leads/export/pdf?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to generate PDF");
+      autoTable(doc, {
+        head: [["Name", "Email", "Phone", "Device", "Status", "Date"]],
+        body: tableData,
+        startY: 45,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
+        alternateRowStyles: { fillColor: [250, 250, 250] },
+      });
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `venus-leads-${format(new Date(), "yyyyMMdd")}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      doc.save(`venus-leads-${format(new Date(), "yyyyMMdd")}.pdf`);
     } catch (err) {
       console.error("PDF Export error:", err);
-      alert("Failed to export PDF. Please try again.");
+      alert("Failed to export PDF locally. Using fallback...");
     } finally {
       setLoading(false);
     }
@@ -136,10 +170,10 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={exportCSV} className="text-[10px] uppercase font-bold tracking-widest h-10 px-4 border border-neutral-800">
+          <Button variant="ghost" size="sm" onClick={exportCSV} disabled={initialLoading} className="text-[10px] uppercase font-bold tracking-widest h-10 px-4 border border-neutral-800">
             <Download className="h-3.5 w-3.5 mr-2" /> CSV
           </Button>
-          <Button variant="ghost" size="sm" onClick={exportPDF} className="text-[10px] uppercase font-bold tracking-widest h-10 px-4 border border-neutral-800">
+          <Button variant="ghost" size="sm" onClick={exportPDF} disabled={initialLoading} className="text-[10px] uppercase font-bold tracking-widest h-10 px-4 border border-neutral-800">
             <FileText className="h-3.5 w-3.5 mr-2" /> PDF
           </Button>
         </div>
@@ -165,7 +199,8 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
           <select 
             value={projectId}
             onChange={(e) => setProjectId(e.target.value)}
-            className="w-full h-10 bg-black/40 border border-neutral-800 rounded-md px-3 text-sm focus:border-[color:var(--accent)] outline-none"
+            disabled={initialLoading}
+            className="w-full h-10 bg-black/40 border border-neutral-800 rounded-md px-3 text-sm focus:border-[color:var(--accent)] outline-none disabled:opacity-50"
           >
             <option value="all">All Projects</option>
             {projects.map(p => (
@@ -213,9 +248,32 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
       </Card>
 
       {/* Leads Table */}
-      <Card className="p-0 overflow-hidden border-neutral-800 bg-neutral-900/20 backdrop-blur-sm">
-        {loading ? (
-          <div className="p-20 text-center text-sm text-neutral-500 animate-pulse">Refreshing leads...</div>
+      <Card className="p-0 overflow-hidden border-neutral-800 bg-neutral-900/20 backdrop-blur-sm relative min-h-[400px]">
+        {loading && (
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px] z-10 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-6 w-6 text-[color:var(--accent)] animate-spin" />
+              <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Updating Dataset</span>
+            </div>
+          </div>
+        )}
+
+        {initialLoading ? (
+          <div className="divide-y divide-neutral-800">
+             {[...Array(6)].map((_, i) => (
+                <div key={i} className="px-6 py-6 flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                      <Skeleton className="h-8 w-8 rounded-lg" />
+                      <div className="space-y-2">
+                         <Skeleton className="h-3 w-32" />
+                         <Skeleton className="h-2 w-48" />
+                      </div>
+                   </div>
+                   <Skeleton className="h-4 w-24" />
+                   <Skeleton className="h-4 w-16" />
+                </div>
+             ))}
+          </div>
         ) : leads.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left">

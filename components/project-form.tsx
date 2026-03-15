@@ -25,6 +25,7 @@ export interface ProjectFormValues {
   auth_type: AuthType;
   password: string;
   published: boolean;
+  theme: string;
   remember_visitor: boolean;
 }
 
@@ -46,6 +47,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     auth_type: (initial?.auth_type as AuthType) ?? "public",
     password: initial?.password ?? "",
     published: initial?.published ?? false,
+    theme: initial?.theme ?? "minimal",
     remember_visitor: initial?.remember_visitor ?? true
   });
 
@@ -195,6 +197,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
       auth_type: values.auth_type,
       password: values.auth_type === "password" ? values.password : null,
       published: values.published,
+      theme: values.theme,
       remember_visitor: values.remember_visitor
     };
 
@@ -265,7 +268,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
             <Textarea
               id="long_description"
               value={values.long_description}
-              onChange={(e) => handleChange("long_description", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleChange("long_description", e.target.value)}
               placeholder="Tell the story of this architectural achievement..."
               rows={8}
             />
@@ -332,6 +335,27 @@ export function ProjectForm({ initial }: ProjectFormProps) {
              </div>
           </div>
 
+          <div className="space-y-1.5">
+            <Label>Presentation Theme</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {['minimal', 'glass', 'architect'].map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => handleChange("theme", t)}
+                  className={cn(
+                    "px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg border transition-all",
+                    values.theme === t 
+                      ? "bg-primary border-primary text-black shadow-lg shadow-primary/20" 
+                      : "bg-neutral-900 border-neutral-800 text-neutral-500 hover:border-neutral-700"
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <Separator className="bg-neutral-800/50" />
 
           <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-neutral-800 bg-neutral-900/40">
@@ -343,7 +367,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
             </div>
             <Switch 
               checked={values.remember_visitor} 
-              onCheckedChange={(checked) => handleChange("remember_visitor", checked)} 
+              onCheckedChange={(checked: boolean) => handleChange("remember_visitor", checked)} 
             />
           </div>
 
@@ -543,19 +567,32 @@ export function ProjectForm({ initial }: ProjectFormProps) {
             <Separator className="bg-neutral-800/40" />
             <div className="pt-2 space-y-4">
                {values.id && (
-                 <Button 
-                   type="button" 
-                   variant="ghost" 
-                   onClick={() => window.open(`/p/${values.slug}`, '_blank')}
-                   className="w-full text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9A46C] border-[#C9A46C]/20 hover:bg-[#C9A46C]/5 h-11"
-                 >
-                   Preview Project
-                 </Button>
+                 <>
+                   <Button
+                       type="button"
+                       variant="ghost"
+                       onClick={() => {
+                           const url = `${values.slug}.${process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'venusapp.in'}`;
+                           copyToClipboard(`https://${url}`);
+                       }}
+                       className="w-full text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 border-neutral-800 hover:bg-neutral-800 h-10"
+                     >
+                       <Copy className="h-3 w-3 mr-2" /> Copy Project Link
+                   </Button>
+                   <Button
+                       type="button"
+                       variant="ghost"
+                       onClick={() => window.open(`https://${values.slug}.${process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'venusapp.in'}`, '_blank')}
+                       className="w-full text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9A46C] border-[#C9A46C]/20 hover:bg-[#C9A46C]/5 h-11"
+                     >
+                       View Live Page
+                   </Button>
+                 </>
                )}
-               <Button 
+               <Button
                  onClick={(e) => handleSubmit(e as any)}
-                 variant={saved ? "ghost" : "primary"} 
-                 disabled={saving || !isValid || !isDirty} 
+                 variant={saved ? "ghost" : "primary"}
+                 disabled={saving || !isValid || !isDirty}
                  className={cn(
                    "w-full h-11 text-[11px] font-black uppercase tracking-[0.2em] transition-all",
                    saved && "border-emerald-500/50 text-emerald-500 bg-emerald-500/5"

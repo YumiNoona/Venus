@@ -11,22 +11,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--bg)",
-        surface: "var(--surface)",
+        bg: "var(--bg)",
+        "bg-soft": "var(--bg-soft)",
+        text: "var(--text)",
+        "text-secondary": "var(--text-secondary)",
         border: "var(--border)",
+        primary: "var(--primary)",
         accent: "var(--accent)",
-        "accent-hover": "var(--accent-hover)",
       },
       borderRadius: {
-        lg: "14px",
-        md: "10px",
-        sm: "8px"
+        lg: "12px",
+        md: "8px",
+        sm: "6px"
       },
       boxShadow: {
-        subtle: "0 14px 45px rgba(0,0,0,0.35)"
-      },
-      transitionTimingFunction: {
-        subtle: "cubic-bezier(0.16, 1, 0.3, 1)"
+        subtle: "0 1px 2px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.05)"
       }
     }
   },
@@ -34,4 +33,3 @@ const config: Config = {
 };
 
 export default config;
-

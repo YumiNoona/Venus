@@ -41,7 +41,8 @@ export async function getLeads({
       visitors(device)
     `)
     .in("project_id", projectIds)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(50); // Default limit for performance
 
   if (search) {
     query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
@@ -66,24 +67,57 @@ export async function getLeads({
 
 export async function verifyLead(leadId: string) {
   const supabase = await createServerSupabaseClient();
+  
+  // Get owner before update for invalidation
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("project_id")
+    .eq("id", leadId)
+    .single();
+
   const { error } = await supabase
     .from("leads")
     .update({ verified: true })
     .eq("id", leadId);
 
   if (error) throw error;
+
+  if (lead?.project_id) {
+     const { data: project } = await supabase.from("projects").select("user_id").eq("id", lead.project_id).single();
+     if (project?.user_id) {
+       const { redis, CACHE_KEYS } = await import("@/lib/redis");
+       await redis.del(CACHE_KEYS.PROJECT_STATS(project.user_id));
+     }
+  }
+
   revalidatePath("/leads");
   return { success: true };
 }
 
 export async function deleteLead(leadId: string) {
   const supabase = await createServerSupabaseClient();
+
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("project_id")
+    .eq("id", leadId)
+    .single();
+
   const { error } = await supabase
     .from("leads")
     .delete()
     .eq("id", leadId);
 
   if (error) throw error;
+
+  if (lead?.project_id) {
+     const { data: project } = await supabase.from("projects").select("user_id").eq("id", lead.project_id).single();
+     if (project?.user_id) {
+       const { redis, CACHE_KEYS } = await import("@/lib/redis");
+       await redis.del(CACHE_KEYS.PROJECT_STATS(project.user_id));
+     }
+  }
+
   revalidatePath("/leads");
   return { success: true };
 }
@@ -121,4 +155,15 @@ export async function verifyExportAccess(type: "csv" | "pdf") {
   }
 
   return { allowed: true };
+}
+
+export async function getStudioProfile() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+  
+  return {
+    name: user.user_metadata?.name || user.email?.split("@")[0] || "Studio",
+    email: user.email
+  };
 }

@@ -23,7 +23,24 @@ export async function submitLead(formData: FormData) {
   const rawIp = headersList.get("x-forwarded-for") || "unknown";
 
   const { hashIP } = await import("@/lib/utils/privacy");
-  const ipHash = hashIP(rawIp);
+  const ipHash = await hashIP(rawIp);
+
+  // 1.5 Rate Limiting: 1 submission per IP every 30 seconds
+  const thirtySecondsAgo = new Date(Date.now() - 30 * 1000).toISOString();
+  const { data: recentLead } = await supabase
+    .from("leads")
+    .select("created_at")
+    .eq("ip_hash", ipHash)
+    .gte("created_at", thirtySecondsAgo)
+    .limit(1)
+    .maybeSingle();
+
+  if (recentLead) {
+    return { 
+      success: false, 
+      error: "Too many submissions. Please wait 30 seconds before trying again." 
+    }
+  }
 
   // 2. Create Lead
   const { data: lead, error: leadError } = await (supabase as any)
@@ -61,8 +78,18 @@ export async function submitLead(formData: FormData) {
       .eq("id", visitor.id);
   }
 
-  // 4. Increment lead counter for analytics
-  await (supabase as any).rpc("increment_project_leads", { project_id: projectId });
+  // 4. Invalidate Redis Cache for the user
+  const { data: project } = await supabase
+    .from("projects")
+    .select("user_id")
+    .eq("id", projectId)
+    .single();
+
+  if (project?.user_id) {
+    const { redis, CACHE_KEYS } = await import("@/lib/redis");
+    const cacheKey = CACHE_KEYS.PROJECT_STATS(project.user_id);
+    void redis.del(cacheKey).catch(e => console.error("Redis del failed:", e));
+  }
 
   return { success: true }
 }

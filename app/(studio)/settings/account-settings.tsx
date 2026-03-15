@@ -153,7 +153,7 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                     variant="primary" 
                     disabled={name === profile.name || isLoading === "name"}
                     onClick={handleUpdateName}
-                    isLoading={isLoading === "name"}
+                    loading={isLoading === "name"}
                    >
                      Save
                    </Button>
@@ -176,7 +176,7 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                     variant="secondary" 
                     disabled={email === profile.email || isLoading === "email"}
                     onClick={handleUpdateEmail}
-                    isLoading={isLoading === "email"}
+                    loading={isLoading === "email"}
                    >
                      Update
                    </Button>
@@ -223,7 +223,7 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                 className="w-full" 
                 disabled={!password || password !== confirmPassword || isLoading === "password"}
                 onClick={handleChangePassword}
-                isLoading={isLoading === "password"}
+                loading={isLoading === "password"}
               >
                 Change Password
               </Button>
@@ -239,7 +239,7 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                 size="sm" 
                 className="gap-2 text-red-500 hover:bg-red-500/5"
                 onClick={handleSignOutOthers}
-                isLoading={isLoading === "sessions"}
+                loading={isLoading === "sessions"}
               >
                  <LogOut className="h-3 w-3" />
                  Sign out others
@@ -290,7 +290,7 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                     variant="danger" 
                     className="w-full h-12 text-white bg-red-600 hover:bg-red-500"
                     disabled={deleteConfirm !== "DELETE" || deleteTimer > 0 || isLoading === "delete"}
-                    isLoading={isLoading === "delete"}
+                    loading={isLoading === "delete"}
                     onClick={async () => {
                         setIsLoading("delete");
                         await deleteAccount();

@@ -18,7 +18,7 @@ export async function trackVisitor(projectId: string) {
   // Get IP and device info
   const ip = headerList.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
   const userAgent = (headerList.get("user-agent") || "unknown").trim();
-  const ipHash = hashIP(ip);
+  const ipHash = await hashIP(ip);
 
   // Parse device info
   const parser = new UAParser(userAgent);

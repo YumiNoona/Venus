@@ -75,7 +75,7 @@ export function LeadTableActions({ leadId, verified }: LeadTableActionsProps) {
              <Button variant="ghost" onClick={() => setIsDeleting(false)} disabled={isLoading}>
                 Cancel
              </Button>
-             <Button variant="danger" onClick={handleDelete} isLoading={isLoading}>
+             <Button variant="danger" onClick={handleDelete} loading={isLoading}>
                 Delete
              </Button>
           </DialogFooter>
