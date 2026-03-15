@@ -1,115 +1,109 @@
 <div align="center">
+  <img src="https://venusapp.in/icon.png" alt="Venus Studio Logo" width="120" height="120" style="border-radius: 24px; margin-bottom: 20px;" />
   <h1 align="center">🪐 VENUS STUDIO</h1>
   <p align="center"><strong>The High-Performance Architectural Experience Engine</strong></p>
 
   <p align="center">
-    <img src="https://img.shields.io/badge/Framework-Next.js%2015-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <a href="https://venusapp.in/" target="_blank">
+      <img src="https://img.shields.io/badge/Live_Site-venusapp.in-emerald?style=for-the-badge&logo=vercel" alt="Live Site" />
+    </a>
+    <img src="https://img.shields.io/badge/Framework-Next.js%2016-black?style=for-the-badge&logo=next.js" alt="Next.js" />
     <img src="https://img.shields.io/badge/Backend-Supabase-emerald?style=for-the-badge&logo=supabase" alt="Supabase" />
-    <img src="https://img.shields.io/badge/Security-Hardenend-blue?style=for-the-badge" alt="Security" />
     <img src="https://img.shields.io/badge/License-MIT-amber?style=for-the-badge" alt="License" />
   </p>
 
   <p align="center">
-    <i>Elevate your architectural presentations with immersive, interactive streaming experiences.</i>
+    <i>Elevate architectural presentations with immersive, interactive streaming experiences.</i>
   </p>
 </div>
 
 ---
 
-## ✨ Premium Features
+## 💎 The Premium Engine for Architects
 
-Venus Studio transforms simple architectural renders into high-converting, interactive storytelling machines.
+Venus Studio transforms static renders into high-converting, immersive storytelling experiences. Designed for studios that demand excellence, it bridges the gap between visualization and lead generation.
 
-- **🌌 Immersive Theming**: Real-time Day/Night cycle transitions using `framer-motion` and theme-aware rendering.
-- **🛡️ Secure Lead Gating**: Fused Identity & Authentication funnel (Password/OTP) with session-based unlocking.
-- **📈 Advanced Analytics**: Real-time visitor tracking with anonymized IP hashing and device fingerprinting.
-- **💳 Multi-Tier Subscription**: Built-in feature gating for **Starter, Studio, and Agency** plans.
-- **🖼️ Professional Editor**: Auto-slug generation, drag-and-drop cover management, and SaaS-style status chips.
-- **📄 High-Fidelity Exports**: Generate professional PDF reports and CSV lead exports with one click.
-- **🏢 White-Labeling**: Remove platform branding and connect custom domains (Agency only).
+### ✨ Elite Features
+
+- **🌐 Branded Subdomains**: Automatically map projects to official subdomains like `serenity.venusapp.in` with zero-config routing.
+- **🛡️ Multi-Factor Gate**: Seamless combination of Identity Verification and security layers (Password / magic-link OTP).
+- **📱 Precise Device Intelligence**: Advanced visitor analytics identifying Windows, Mac, iPhone, and Android for granular reporting.
+- **📄 Professional Export Tooling**:
+  - **PDF Reports**: High-fidelity, server-side PDF generation using Puppeteer for branded architectural portfolios.
+  - **Excel-Optimized CSV**: Tab-prefixed phone formatting to prevent data loss or scientific notation in Excel.
+- **⚡ Next.js 16 Proxy Layer**: Enterprise-grade routing architecture for subdomain-to-path rewrites and session persistence.
+- **🌌 Immersive Theming**: Dynamic theme-aware UI with fluid `framer-motion` transitions and high-resolution media management.
+- **🎨 Custom Platform Branding**: Fully integrated platform identity with custom high-res favicons and minimal Studio UI.
 
 ---
 
-## 🛠️ Technical Matrix
+## 🛠️ The Technology Matrix
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Frontend** | Next.js 15 (App Router) | Core Application Logic |
-| **Backend** | Supabase (PostgreSQL) | Real-time Database & Auth |
-| **Styling** | Tailwind CSS / Vanilla CSS | High-Performance Aesthetics |
-| **Animations** | Framer Motion | Fluid UI/UX Transitions |
-| **Security** | Bcrypt / SHA-256 | Data Privacy & Hardening |
-| **Types** | TypeScript | End-to-end Type Safety |
+| **Framework** | Next.js 16 (App Router) | Core Routing & Server-Side Execution |
+| **Backend** | Supabase (PostgreSQL) | Real-time Database, Storage & Auth |
+| **PDF Engine** | Puppeteer | Server-side High-Fidelity Rendering |
+| **Intelligence** | UA-Parser-JS | Granular Device & OS Identification |
+| **Styling** | Tailwind CSS + Vanilla CSS | High-Performance Design System |
+| **Animations** | Framer Motion | Fluid Interactive Lifecycle Transitions |
+| **Security** | SHA-256 / Bcrypt | Data Privacy & Access Control |
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Deployment & Local Setup
 
 ### 1. Environment Configuration
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file with your credentials:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_PLATFORM_DOMAIN=venusapp.in
 ```
 
 ### 2. Database Synchronization
-Apply the schema provided in [migration.sql](file:///f:/AI/Venus/supabase/migration.sql) to your Supabase SQL editor. This handles:
-- ENUM definitions for security.
-- RLS Policy enforcement.
-- Subscription and project tracking.
+Apply the schema in `supabase/migration.sql` to your Supabase project. This handles:
+- **Slug Versioning**: 301 Redirects for modified project URLs.
+- **RLS Policies**: Atomic security for projects, leads, and visitors.
+- **Plan Enforcement**: Feature gating for Starter/Studio/Agency tiers.
 
-### 3. Local Development
+### 3. Execution
 ```bash
 # Install dependencies
 npm install
 
-# Launch development server
-npm run dev
+# Start production build
+npm run build && npm start
 ```
-
-Visit `http://localhost:3000` to begin.
 
 ---
 
-## 📦 Project Architecture
+## 🏛️ Project Architecture
 
 ```text
-├── app/                  # Next.js App Router (Studio, Public, API)
-├── components/           # UI Library & Experience Components
-├── lib/                  # Server Actions, Auth helpers, & Database Config
-├── styles/               # Global CSS & Design Tokens
-├── supabase/             # Migration scripts & SQL Logic
-└── types/                # Auto-generated & Custom TypeScript definitions
+├── app/                  # Next.js 16 App Router (Studio, Public, API)
+├── components/           # UI Engine & Shared Design Components
+├── lib/                  # Server Actions, Auth logic, & Billing Config
+├── proxy.ts              # Custom platform middleware & subdomain proxy
+├── supabase/             # Database migrations & SQL logic
+└── public/               # Static assets and high-res iconography
 ```
 
 ---
 
-## 🔒 Security Standards
-
-Venus is built with a **Privacy-First** approach:
-- **Zero Raw IP Storage**: Every visitor IP is hashed using SHA-256 before storage.
-- **Idempotent Tracking**: 60-second window prevents analytics inflation from page reloads.
-- **Server-Side Enforcement**: All feature gates and mutations run purely on the server.
-- **Password Protection**: Industry-standard `bcrypt` hashing for all project passwords.
-
----
-
-## 📜 License
+## 📜 License & Legal
 
 This project is licensed under the **MIT License**.
 
 Copyright (c) 2026 Venus Studio.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> [!NOTE]
+> All visitor data is hashed via SHA-256 before storage to ensure complete privacy compliance and enterprise-grade data security.
 
 ---
 
 <div align="center">
-  <p>Built for architects who demand excellence.</p>
-  <p><strong> Made By Veil &copy; 2026</strong></p>
+  <p>Engineered for the future of architectural representation.</p>
+  <p><strong>Made By Veil &copy; 2026</strong></p>
 </div>

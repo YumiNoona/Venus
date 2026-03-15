@@ -62,6 +62,28 @@ export async function proxy(req: NextRequest) {
   }
 
   if (!isMainDomain && !isExcludedSubdomain) {
+     // 1. Check if this is a primary slug
+     const { data: project } = await supabase
+       .from('projects')
+       .select('id')
+       .eq('slug', currentHost)
+       .single();
+
+     if (!project) {
+       // 2. Check for redirect
+       const { data: redirectData } = await (supabase as any)
+         .from('slug_redirects')
+         .select('new_slug')
+         .eq('old_slug', currentHost)
+         .maybeSingle();
+
+       if (redirectData) {
+         return NextResponse.redirect(new URL(`${url.protocol}//${redirectData.new_slug}.${platformDomain}${url.pathname === '/' ? '' : url.pathname}`), {
+           status: 301
+         });
+       }
+     }
+
      // This is a project subdomain (e.g. serenity-villa.venusapp.io)
      // Rewrite to /p/[slug] internally
      if (!url.pathname.startsWith('/p/')) {

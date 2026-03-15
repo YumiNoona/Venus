@@ -12,7 +12,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Venus · Architectural Experiences",
   description:
-    "Venus helps architecture studios present interactive experiences with beautiful, minimal project pages."
+    "Venus helps architecture studios present interactive experiences with beautiful, minimal project pages.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  }
 };
 
 export default function RootLayout({

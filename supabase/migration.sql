@@ -174,5 +174,23 @@ alter table public.subscriptions enable row level security;
 create policy "subscriptions_select_own" on public.subscriptions
   for select using (auth.uid() = user_id);
 
+-- ─── Slug Redirects ────────────────────────────────────
+create table if not exists public.slug_redirects (
+  id         uuid primary key default uuid_generate_v4(),
+  old_slug   text unique not null,
+  new_slug   text not null,
+  project_id uuid not null references public.projects(id) on delete cascade,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_slug_redirects_old_slug on public.slug_redirects(old_slug);
+
+-- Enable RLS for Slug Redirects
+alter table public.slug_redirects enable row level security;
+
+-- Public can read redirects
+create policy "slug_redirects_select_public" on public.slug_redirects
+  for select using (true);
+
 -- ─── Indices for Funnel ────────────────────────────────
 create index if not exists idx_visitors_lead_id on public.visitors(lead_id);

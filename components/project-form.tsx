@@ -60,12 +60,31 @@ export function ProjectForm({ initial }: ProjectFormProps) {
   const [saved, setSaved] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
 
+  // Validation Logic
+  const isValid = !!(values.name && values.slug && values.stream_url && (lightPreview || thumbnailLightFile) && (darkPreview || thumbnailDarkFile));
+  const isEdit = !!values.id;
+  const isDirty = isEdit ? (
+    values.name !== initial?.name ||
+    values.slug !== initial?.slug ||
+    values.short_description !== initial?.short_description ||
+    values.long_description !== initial?.long_description ||
+    values.stream_url !== initial?.stream_url ||
+    values.auth_type !== initial?.auth_type ||
+    values.password !== initial?.password ||
+    values.published !== initial?.published ||
+    values.remember_visitor !== initial?.remember_visitor ||
+    !!thumbnailLightFile ||
+    !!thumbnailDarkFile
+  ) : true;
+
+  const showSlugWarning = isEdit && values.slug !== initial?.slug;
+
   // Auto-Slug Logic
   const onNameChange = (name: string) => {
     setValues(prev => ({
       ...prev,
       name,
-      slug: slugify(name)
+      slug: isEdit ? prev.slug : slugify(name)
     }));
   };
 
@@ -191,8 +210,6 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   }
-
-  const isEdit = !!values.id;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 animate-in fade-in duration-300 pb-20">
@@ -510,6 +527,18 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                 Some assets are missing. We recommend completing all fields for the best experience.
               </p>
             )}
+ 
+             {showSlugWarning && (
+               <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 animate-in fade-in slide-in-from-top-2 duration-300">
+                 <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                 <div className="space-y-1">
+                   <p className="text-[10px] font-bold text-amber-500 uppercase tracking-tight">URL Change Warning</p>
+                   <p className="text-[10px] text-amber-200/70 leading-relaxed italic">
+                     Modifying the slug will change the project's URL. Existing links shared with clients may stop working and will require redirection.
+                   </p>
+                 </div>
+               </div>
+             )}
 
             <Separator className="bg-neutral-800/40" />
             <div className="pt-2 space-y-4">
@@ -526,16 +555,18 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                <Button 
                  onClick={(e) => handleSubmit(e as any)}
                  variant={saved ? "ghost" : "primary"} 
-                 disabled={saving} 
+                 disabled={saving || !isValid || !isDirty} 
                  className={cn(
                    "w-full h-11 text-[11px] font-black uppercase tracking-[0.2em] transition-all",
                    saved && "border-emerald-500/50 text-emerald-500 bg-emerald-500/5"
                  )}
                >
-                 {saving ? (isEdit ? "Updating..." : "Saving...") : saved ? (
-                   <><Check className="h-4 w-4 mr-2" /> Project Saved</>
+                 {saving ? (
+                   isEdit ? "Updating..." : "Uploading..."
+                 ) : saved ? (
+                   <><Check className="h-4 w-4 mr-2" /> {isEdit ? "Project Updated" : "Project Uploaded"}</>
                  ) : (
-                   <><Save className="h-4 w-4 mr-2" /> {isEdit ? "Update Project" : "Save Project"}</>
+                   <><Save className="h-4 w-4 mr-2" /> {isEdit ? "Update Project" : "Upload Project"}</>
                  )}
                </Button>
                <Link href="/projects" className="block text-center pt-2">

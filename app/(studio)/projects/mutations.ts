@@ -53,6 +53,13 @@ export async function saveProject(payload: any) {
       return { success: false, error: "OTP verification requires Studio plan." };
     }
 
+    // 4. Fetch existing project to check for slug change
+    const { data: existingProject } = await supabase
+      .from("projects")
+      .select("slug")
+      .eq("id", id)
+      .single();
+
     // Update
     result = await supabase
       .from("projects")
@@ -61,6 +68,17 @@ export async function saveProject(payload: any) {
       .eq("user_id", user.id)
       .select()
       .single();
+
+    // 5. If slug changed, record redirect
+    if (!result.error && existingProject && result.data && existingProject.slug !== result.data.slug) {
+       await (supabase as any)
+         .from('slug_redirects')
+         .insert({
+           old_slug: existingProject.slug,
+           new_slug: result.data.slug,
+           project_id: id
+         });
+    }
   } else {
     // Insert - 2a. Limit Check
     const sub = await getSubscription();
@@ -85,7 +103,7 @@ export async function saveProject(payload: any) {
       .single();
 
     // 2c. Increment Usage if successful
-    if (!result.error && sub) {
+    if (!result.error && result.data && sub) {
       await (supabase as any)
         .from("subscriptions")
         .update({ projects_used: (sub.projects_used || 0) + 1 })
@@ -99,8 +117,10 @@ export async function saveProject(payload: any) {
   }
 
   revalidatePath("/projects");
-  revalidatePath(`/project/${result.data.slug}`);
-  revalidatePath(`/p/${result.data.slug}`);
+  if (result.data) {
+    revalidatePath(`/project/${result.data.slug}`);
+    revalidatePath(`/p/${result.data.slug}`);
+  }
   
   return { success: true, data: result.data };
 }
