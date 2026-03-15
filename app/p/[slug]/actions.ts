@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { headers } from "next/headers"
 import { hashIP } from "@/lib/utils/privacy"
 import bcrypt from "bcrypt"
+import { UAParser } from "ua-parser-js"
 
 /**
  * Records a visitor entry for a specific project.
@@ -18,6 +19,21 @@ export async function trackVisitor(projectId: string) {
   const ip = headerList.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
   const userAgent = (headerList.get("user-agent") || "unknown").trim();
   const ipHash = hashIP(ip);
+
+  // Parse device info
+  const parser = new UAParser(userAgent);
+  const result = parser.getResult();
+  
+  let device = "Desktop";
+  if (result.device.type === "mobile") {
+    device = result.device.vendor || "Mobile";
+  } else if (result.device.type === "tablet") {
+    device = "Tablet";
+  } else if (result.os.name) {
+    device = result.os.name;
+  }
+
+  const deviceLabel = device.substring(0, 255);
 
   // 1. Idempotency Check: Prevent duplicate counting within 60 seconds
   const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
@@ -39,7 +55,7 @@ export async function trackVisitor(projectId: string) {
     .insert({
       project_id: projectId,
       ip_hash: ipHash,
-      device: userAgent.substring(0, 255),
+      device: deviceLabel,
       visited_at: new Date().toISOString()
     });
 
@@ -57,19 +73,26 @@ export async function verifyProjectPassword(slug: string, password: string) {
   
   const { data: project } = await supabase
     .from("projects")
-    .select("password_hash")
+    .select("password_hash, project_password")
     .eq("slug", slug)
     .single();
 
-  if (!project || !project.password_hash) {
-    return { success: false, error: "Project not protected or not found" };
+  if (!project) {
+    return { success: false, error: "Project not found" };
   }
 
-  const isValid = await bcrypt.compare(password, project.password_hash);
-  
-  if (isValid) {
-    return { success: true };
-  } else {
-    return { success: false, error: "Incorrect password" };
+  // 1. Check plain-text password first (new system)
+  if (project.project_password) {
+    if (password === project.project_password) {
+       return { success: true };
+    }
   }
+
+  // 2. Fallback to bcrypt (legacy projects)
+  if (project.password_hash) {
+    const isValid = await bcrypt.compare(password, project.password_hash);
+    if (isValid) return { success: true };
+  }
+
+  return { success: false, error: "Incorrect password" };
 }

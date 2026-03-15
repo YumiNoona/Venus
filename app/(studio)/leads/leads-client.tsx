@@ -63,7 +63,7 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
     const rows = leads.map(l => ({
       Name: l.name,
       Email: l.email,
-      Phone: l.phone ? `="${l.phone}"` : "N/A",
+      Phone: l.phone ? `\t${l.phone}` : "N/A",
       Project: l.projects?.name || "N/A",
       Device: l.visitors?.[0]?.device || "unknown",
       Date: format(new Date(l.created_at), "yyyy-MM-dd HH:mm")
@@ -95,32 +95,32 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
       return;
     }
 
-    const doc = new jsPDF()
-    
-    doc.setFontSize(18)
-    doc.text("Project Leads Report", 14, 22)
-    doc.setFontSize(10)
-    doc.setTextColor(100)
-    doc.text(`Generated on ${format(new Date(), "PPpp")}`, 14, 30)
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (projectId !== "all") params.append("projectId", projectId);
+      if (fromDate) params.append("fromDate", fromDate);
+      if (toDate) params.append("toDate", toDate);
 
-    const tableData = leads.map(l => [
-      l.name,
-      l.email,
-      l.phone || "-",
-      l.projects?.name || "-",
-      l.visitors?.[0]?.device?.substring(0, 30) || "unknown",
-      format(new Date(l.created_at), "MMM d, yyyy")
-    ])
+      const response = await fetch(`/api/leads/export/pdf?${params.toString()}`);
+      if (!response.ok) throw new Error("Failed to generate PDF");
 
-    autoTable(doc, {
-      startY: 40,
-      head: [["Name", "Email", "Phone", "Project", "Device", "Date"]],
-      body: tableData,
-      headStyles: { fillColor: [20, 20, 20], textColor: [200, 200, 200], fontStyle: "bold" },
-      styles: { fontSize: 8, cellPadding: 4 }
-    })
-
-    doc.save(`venus-leads-${format(new Date(), "yyyyMMdd")}.pdf`)
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `venus-leads-${format(new Date(), "yyyyMMdd")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("PDF Export error:", err);
+      alert("Failed to export PDF. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

@@ -64,7 +64,9 @@ export type Database = {
           long_description: string | null
           name: string
           password_hash: string | null
+          project_password: string | null
           published: boolean | null
+          remember_visitor: boolean | null
           short_description: string | null
           slug: string
           stream_url: string | null
@@ -82,7 +84,9 @@ export type Database = {
           long_description?: string | null
           name: string
           password_hash?: string | null
+          project_password?: string | null
           published?: boolean | null
+          remember_visitor?: boolean | null
           short_description?: string | null
           slug: string
           stream_url?: string | null
@@ -100,7 +104,9 @@ export type Database = {
           long_description?: string | null
           name?: string
           password_hash?: string | null
+          project_password?: string | null
           published?: boolean | null
+          remember_visitor?: boolean | null
           short_description?: string | null
           slug?: string
           stream_url?: string | null

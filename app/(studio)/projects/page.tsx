@@ -83,11 +83,13 @@ export default async function ProjectsPage() {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex flex-col gap-1">
-                          <span className="text-xs font-mono text-neutral-400">/p/{project.slug}</span>
+                          <span className="text-xs font-mono text-neutral-400">
+                            {project.slug}.{process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'venusapp.in'}
+                          </span>
                           <Link 
                               href={`/p/${project.slug}`} 
                               target="_blank"
-                              className="text-[10px] text-[color:var(--accent)] hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="text-[10px] text-[color:var(--accent)] hover:underline flex items-center gap-1"
                           >
                               Visit Page <ExternalLink className="h-2.5 w-2.5" />
                           </Link>

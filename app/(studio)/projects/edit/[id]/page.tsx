@@ -51,8 +51,9 @@ export default async function EditProjectPage({
           long_description: project.long_description ?? "",
           stream_url: project.stream_url ?? "",
           auth_type: (project.auth_type as any) || "public",
-          password: "", 
-          published: project.published ?? false
+          password: project.project_password || "", 
+          published: project.published ?? false,
+          remember_visitor: project.remember_visitor ?? true
         }}
       />
     </div>

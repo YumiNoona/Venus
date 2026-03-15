@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
 import { Input, Textarea, Label, Button, Card, Badge, Separator, Switch } from "@/components/ui";
 import { slugify } from "@/lib/slugify";
-import { ArrowLeft, Box, Check, Save, Upload, Cloud, Globe, Lock, AlertCircle } from "lucide-react";
+import { ArrowLeft, Box, Check, Save, Upload, Cloud, Globe, Lock, AlertCircle, Eye, EyeOff, Copy, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { saveProject } from "@/app/(studio)/projects/mutations";
 import { useDropzone } from "react-dropzone";
@@ -44,7 +44,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     long_description: initial?.long_description ?? "",
     stream_url: initial?.stream_url ?? "",
     auth_type: (initial?.auth_type as AuthType) ?? "public",
-    password: "", // Never initial password
+    password: initial?.password ?? "",
     published: initial?.published ?? false,
     remember_visitor: initial?.remember_visitor ?? true
   });
@@ -56,6 +56,9 @@ export function ProjectForm({ initial }: ProjectFormProps) {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   // Auto-Slug Logic
   const onNameChange = (name: string) => {
@@ -68,6 +71,9 @@ export function ProjectForm({ initial }: ProjectFormProps) {
 
   function handleChange(field: keyof ProjectFormValues, value: string | boolean) {
     setValues((prev) => ({ ...prev, [field]: value }));
+    if (field === "auth_type" && value === "password") {
+       setTimeout(() => passwordRef.current?.focus(), 50);
+    }
   }
 
   // Drag and Drop implementation
@@ -100,6 +106,20 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     maxFiles: 1,
     maxSize: 2 * 1024 * 1024
   });
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    // Simple alert or toast could be added here
+  };
+
+  const generatePassword = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let pass = "";
+    for (let i = 0; i < 8; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    handleChange("password", pass);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -167,9 +187,12 @@ export function ProjectForm({ initial }: ProjectFormProps) {
       return;
     }
 
-    router.push("/projects");
     router.refresh();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
   }
+
+  const isEdit = !!values.id;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 animate-in fade-in duration-300 pb-20">
@@ -202,6 +225,11 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                 className="font-mono text-xs bg-neutral-900/50 border-neutral-800"
                 required
               />
+              {values.slug && (
+                <p className="text-[10px] text-neutral-500 mt-1">
+                  Project URL: <span className="text-[color:var(--accent)] font-bold">{values.slug}.{process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'venusapp.in'}</span>
+                </p>
+              )}
             </div>
           </div>
 
@@ -303,21 +331,48 @@ export function ProjectForm({ initial }: ProjectFormProps) {
           </div>
 
           {values.auth_type === "password" && (
-            <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-top-2 duration-300">
+            <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
               <div className="space-y-1.5">
-                <Label htmlFor="password">Project Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={values.password}
-                  onChange={(e) => handleChange("password", e.target.value)}
-                  placeholder="Set access password"
-                  required
-                />
-              </div>
-              <div className="flex flex-col justify-end">
-                <p className="text-[10px] text-neutral-500 italic pb-2">
-                  This password will be required for visitors to view the project.
+                <div className="flex items-center justify-between">
+                   <Label htmlFor="password">Project Password</Label>
+                   <div className="flex gap-2">
+                      <button 
+                        type="button" 
+                        onClick={() => copyToClipboard(values.password)}
+                        className="text-[9px] uppercase font-bold text-neutral-500 hover:text-[color:var(--accent)] transition-colors flex items-center gap-1"
+                      >
+                        <Copy className="h-2.5 w-2.5" /> Copy
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={generatePassword}
+                        className="text-[9px] uppercase font-bold text-neutral-500 hover:text-[color:var(--accent)] transition-colors flex items-center gap-1"
+                      >
+                        <RefreshCw className="h-2.5 w-2.5" /> Regenerate
+                      </button>
+                   </div>
+                </div>
+                <div className="relative">
+                  <Input
+                    ref={passwordRef}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={values.password}
+                    onChange={(e) => handleChange("password", e.target.value)}
+                    placeholder="Enter access password"
+                    required
+                    className="pr-20 font-mono text-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-lg filter drop-shadow hover:scale-110 transition-transform"
+                  >
+                    {showPassword ? "🙈" : "👁"}
+                  </button>
+                </div>
+                <p className="text-[10px] text-neutral-500 italic">
+                  Visitors must enter this password to access the project experience.
                 </p>
               </div>
             </div>
@@ -329,29 +384,6 @@ export function ProjectForm({ initial }: ProjectFormProps) {
             {error}
           </div>
         )}
-
-        <div className="flex justify-between items-center pt-4">
-          <div className="flex gap-3">
-             {values.slug && (
-               <Button 
-                 type="button" 
-                 variant="ghost" 
-                 onClick={() => window.open(`/p/${values.slug}`, '_blank')}
-                 className="text-[10px] font-bold uppercase tracking-widest text-[#C9A46C] hover:bg-[#C9A46C]/10"
-               >
-                 Preview Project
-               </Button>
-             )}
-          </div>
-          <div className="flex gap-3">
-            <Link href="/projects">
-              <Button variant="ghost">Discard</Button>
-            </Link>
-            <Button type="submit" variant="primary" disabled={saving} className="min-w-[140px] h-11 text-xs uppercase tracking-widest font-black">
-              {saving ? "Saving..." : <><Save className="h-4 w-4 mr-2" /> Save Changes</>}
-            </Button>
-          </div>
-        </div>
       </form>
 
       {/* Sidebar preview/thumbnails */}
@@ -472,13 +504,45 @@ export function ProjectForm({ initial }: ProjectFormProps) {
               </div>
            </div>
 
-           {( !values.stream_url || !lightPreview || !darkPreview ) && (
-             <p className="text-[9px] text-neutral-600 flex items-start gap-1.5 leading-tight italic">
-               <AlertCircle className="h-3 w-3 shrink-0" />
-               Some assets are missing. We recommend completing all fields for the best experience.
-             </p>
-           )}
-        </section>
+            {( !values.stream_url || !lightPreview || !darkPreview ) && (
+              <p className="text-[9px] text-neutral-600 flex items-start gap-1.5 leading-tight italic">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                Some assets are missing. We recommend completing all fields for the best experience.
+              </p>
+            )}
+
+            <Separator className="bg-neutral-800/40" />
+            <div className="pt-2 space-y-4">
+               {values.id && (
+                 <Button 
+                   type="button" 
+                   variant="ghost" 
+                   onClick={() => window.open(`/p/${values.slug}`, '_blank')}
+                   className="w-full text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9A46C] border-[#C9A46C]/20 hover:bg-[#C9A46C]/5 h-11"
+                 >
+                   Preview Project
+                 </Button>
+               )}
+               <Button 
+                 onClick={(e) => handleSubmit(e as any)}
+                 variant={saved ? "ghost" : "primary"} 
+                 disabled={saving} 
+                 className={cn(
+                   "w-full h-11 text-[11px] font-black uppercase tracking-[0.2em] transition-all",
+                   saved && "border-emerald-500/50 text-emerald-500 bg-emerald-500/5"
+                 )}
+               >
+                 {saving ? (isEdit ? "Updating..." : "Saving...") : saved ? (
+                   <><Check className="h-4 w-4 mr-2" /> Project Saved</>
+                 ) : (
+                   <><Save className="h-4 w-4 mr-2" /> {isEdit ? "Update Project" : "Save Project"}</>
+                 )}
+               </Button>
+               <Link href="/projects" className="block text-center pt-2">
+                 <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-600 hover:text-neutral-400 transition-colors">Discard Changes</span>
+               </Link>
+            </div>
+         </section>
       </aside>
     </div>
   );

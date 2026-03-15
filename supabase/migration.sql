@@ -30,6 +30,7 @@ create table if not exists public.projects (
   stream_url        text,
   auth_type         public.project_auth not null default 'public',
   password_hash     text,
+  project_password  text,
   published         boolean not null default false,
   view_count        bigint not null default 0,
   lead_count        bigint not null default 0,

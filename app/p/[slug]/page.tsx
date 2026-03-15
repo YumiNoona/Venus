@@ -8,6 +8,7 @@ import { Metadata } from "next"
 import { Card, Label, Input } from "@/components/ui"
 import { ThemeAwareImage } from "@/components/theme-aware-image"
 import { ExperienceGate } from "@/components/experience-gate"
+import { ProjectThemeToggle } from "@/components/project-theme-toggle"
 import { PLAN_FEATURES, type PlanType } from "@/lib/config/plans"
 
 export const revalidate = 60 // ISR: Refresh cache every 60 seconds
@@ -72,7 +73,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const features = sub ? PLAN_FEATURES[sub.plan as PlanType] : PLAN_FEATURES.free
 
   return (
-    <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--text-primary)] selection:bg-[color:var(--accent)] selection:text-black scroll-smooth">
+    <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--text-primary)] selection:bg-[color:var(--accent)] selection:text-black scroll-smooth relative">
+      <div className="fixed top-6 right-6 z-[100]">
+        <ProjectThemeToggle />
+      </div>
       
       {/* 1. Hero Section */}
       <ProjectHero 

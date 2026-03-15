@@ -50,7 +50,7 @@ export default function SignupPage() {
     }
 
     setLoading(false);
-    router.push("/dashboard");
+    router.push("/verify-email");
     router.refresh();
   }
 

@@ -12,31 +12,61 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otpToken, setOtpToken] = useState("");
+  const [loginMode, setLoginMode] = useState<"password" | "otp">("password");
+  const [otpSent, setOtpSent] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     setLoading(true);
     setError(null);
 
     const supabase = createBrowserSupabaseClient();
 
-    const { error: signInError } =
-      await supabase.auth.signInWithPassword({
+    if (loginMode === "password") {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-    setLoading(false);
+      if (signInError) {
+        setLoading(false);
+        setError(signInError.message);
+        return;
+      }
+    } else if (loginMode === "otp" && !otpSent) {
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,
+        }
+      });
 
-    if (signInError) {
-      setError(signInError.message);
+      setLoading(false);
+      if (otpError) {
+        setError(otpError.message);
+        return;
+      }
+      setOtpSent(true);
       return;
+    } else if (loginMode === "otp" && otpSent) {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: otpToken,
+        type: "email",
+      });
+
+      if (verifyError) {
+        setLoading(false);
+        setError(verifyError.message);
+        return;
+      }
     }
 
+    setLoading(false);
     router.push("/dashboard");
     router.refresh();
   }
@@ -69,20 +99,63 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@studio.com"
                 required
+                disabled={otpSent}
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-              />
-            </div>
+            {loginMode === "password" ? (
+              <div className="space-y-1.5 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <button 
+                    type="button" 
+                    onClick={() => setLoginMode("otp")}
+                    className="text-[10px] text-[color:var(--accent)] hover:underline font-bold uppercase tracking-wider"
+                  >
+                    Use magic link / OTP
+                  </button>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            ) : (
+              <div className="space-y-1.5 animate-in fade-in duration-300">
+                 <div className="flex items-center justify-between">
+                  <Label htmlFor="otp">{otpSent ? "Verification Code" : "Passwordless Access"}</Label>
+                  {!otpSent && (
+                    <button 
+                      type="button" 
+                      onClick={() => setLoginMode("password")}
+                      className="text-[10px] text-[color:var(--accent)] hover:underline font-bold uppercase tracking-wider"
+                    >
+                      Use password
+                    </button>
+                  )}
+                </div>
+                {otpSent ? (
+                  <Input
+                    id="otp"
+                    type="text"
+                    value={otpToken}
+                    onChange={(e) => setOtpToken(e.target.value)}
+                    placeholder="Enter 6-digit code"
+                    className="tracking-[0.5em] text-center font-bold"
+                    maxLength={6}
+                    required
+                  />
+                ) : (
+                  <p className="text-xs text-neutral-500 italic pb-2">
+                    We'll send a one-time code to your email for instant access.
+                  </p>
+                )}
+              </div>
+            )}
 
             {error && (
               <div className="rounded-md border border-red-500/20 bg-[color:var(--danger-soft)] px-3 py-2 text-xs text-red-400">
@@ -91,9 +164,19 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" variant="primary" className="w-full" isLoading={loading}>
-              Sign in
+              {loginMode === "otp" && !otpSent ? "Send magic code" : "Sign in"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+            
+            {loginMode === "otp" && otpSent && (
+              <button 
+                type="button"
+                className="w-full text-xs text-neutral-500 hover:text-white mt-2"
+                onClick={() => setOtpSent(false)}
+              >
+                Change email or use password
+              </button>
+            )}
           </form>
 
           <div className="mt-8 pt-6 border-t border-neutral-800">

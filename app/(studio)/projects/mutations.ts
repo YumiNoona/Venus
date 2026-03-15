@@ -31,10 +31,14 @@ export async function saveProject(payload: any) {
     remember_visitor: payload.remember_visitor ?? true
   };
 
-  // 2. Hash password if provided
-  if (password && payload.auth_type === "password") {
-    projectData.password_hash = await bcrypt.hash(password, 10);
+  // 2. Store password as plain-text if provided
+  if (payload.auth_type === "password") {
+    if (password && password.length > 0) {
+      projectData.project_password = password;
+      projectData.password_hash = null; // Transitioning away from bcrypt
+    }
   } else if (payload.auth_type === "public") {
+    projectData.project_password = null;
     projectData.password_hash = null;
   }
 

@@ -11,6 +11,10 @@ export async function requireUser() {
     redirect("/login");
   }
 
+  if (!user.email_confirmed_at) {
+    redirect("/verify-email");
+  }
+
   return { supabase, user };
 }
 
