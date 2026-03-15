@@ -111,5 +111,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 <div align="center">
   <p>Built for architects who demand excellence.</p>
-  <p><strong>Venus Studio &copy; 2026</strong></p>
+  <p><strong> Made By Veil &copy; 2026</strong></p>
 </div>
