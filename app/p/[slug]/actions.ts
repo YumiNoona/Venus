@@ -1,6 +1,9 @@
+"use server"
+
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { headers } from "next/headers"
 import { hashIP } from "@/lib/utils/privacy"
+import bcrypt from "bcrypt"
 
 /**
  * Records a visitor entry for a specific project.
@@ -47,4 +50,26 @@ export async function trackVisitor(projectId: string) {
 
   // 3. Increment direct counter on project for fast analytics
   await (supabase as any).rpc("increment_project_views", { project_id: projectId });
+}
+
+export async function verifyProjectPassword(slug: string, password: string) {
+  const supabase = await createServerSupabaseClient();
+  
+  const { data: project } = await supabase
+    .from("projects")
+    .select("password_hash")
+    .eq("slug", slug)
+    .single();
+
+  if (!project || !project.password_hash) {
+    return { success: false, error: "Project not protected or not found" };
+  }
+
+  const isValid = await bcrypt.compare(password, project.password_hash);
+  
+  if (isValid) {
+    return { success: true };
+  } else {
+    return { success: false, error: "Incorrect password" };
+  }
 }

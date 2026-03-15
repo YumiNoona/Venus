@@ -6,11 +6,13 @@ import { ReactNode } from "react";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-[color:var(--bg)] transition-colors duration-200">
-      <Sidebar />
-      <main className="flex-1 lg:ml-64 relative">
-        {children}
-      </main>
-    </div>
+    <ThemeProvider attribute="class" defaultTheme="dark" storageKey="venus-admin-theme">
+      <div className="flex min-h-screen bg-[color:var(--bg)] transition-colors duration-200">
+        <Sidebar />
+        <main className="flex-1 lg:ml-64 relative">
+          {children}
+        </main>
+      </div>
+    </ThemeProvider>
   );
 }

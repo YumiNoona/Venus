@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
-import { Input, Textarea, Label, Button, Card, Badge, Separator } from "@/components/ui";
+import { Input, Textarea, Label, Button, Card, Badge, Separator, Switch } from "@/components/ui";
 import { slugify } from "@/lib/slugify";
 import { ArrowLeft, Box, Check, Save, Upload, Cloud, Globe, Lock, AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -25,6 +25,7 @@ export interface ProjectFormValues {
   auth_type: AuthType;
   password: string;
   published: boolean;
+  remember_visitor: boolean;
 }
 
 interface ProjectFormProps {
@@ -44,7 +45,8 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     stream_url: initial?.stream_url ?? "",
     auth_type: (initial?.auth_type as AuthType) ?? "public",
     password: "", // Never initial password
-    published: initial?.published ?? false
+    published: initial?.published ?? false,
+    remember_visitor: initial?.remember_visitor ?? true
   });
 
   const [thumbnailLightFile, setThumbnailLightFile] = useState<File | null>(null);
@@ -153,7 +155,8 @@ export function ProjectForm({ initial }: ProjectFormProps) {
       stream_url: values.stream_url || null,
       auth_type: values.auth_type,
       password: values.auth_type === "password" ? values.password : null,
-      published: values.published
+      published: values.published,
+      remember_visitor: values.remember_visitor
     };
 
     const result = await saveProject(payload);
@@ -282,6 +285,21 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                   <option value="otp">OTP Verification</option>
                 </select>
              </div>
+          </div>
+
+          <Separator className="bg-neutral-800/50" />
+
+          <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-neutral-800 bg-neutral-900/40">
+            <div className="space-y-1">
+              <Label className="text-sm font-bold text-[color:var(--text-primary)]">Remember visitor session</Label>
+              <p className="text-[10px] text-neutral-500 leading-relaxed font-medium">
+                Returning visitors on the same device can re-enter without filling the form again. Recommended for better UX.
+              </p>
+            </div>
+            <Switch 
+              checked={values.remember_visitor} 
+              onCheckedChange={(checked) => handleChange("remember_visitor", checked)} 
+            />
           </div>
 
           {values.auth_type === "password" && (

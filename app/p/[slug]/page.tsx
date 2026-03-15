@@ -7,6 +7,8 @@ import { LeadForm } from "@/components/lead-form"
 import { Metadata } from "next"
 import { Card, Label, Input } from "@/components/ui"
 import { ThemeAwareImage } from "@/components/theme-aware-image"
+import { ExperienceGate } from "@/components/experience-gate"
+import { PLAN_FEATURES, type PlanType } from "@/lib/config/plans"
 
 export const revalidate = 60 // ISR: Refresh cache every 60 seconds
 
@@ -36,16 +38,19 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const supabase = await createServerSupabaseClient();
 
-  const { data: project } = await supabase
+  const { data: project } = await (supabase as any)
     .from("projects")
     .select(`
       id,
+      user_id,
       name,
       short_description,
       long_description,
       stream_url,
       thumbnail_light,
       thumbnail_dark,
+      auth_type,
+      remember_visitor,
       published
     `)
     .eq("slug", slug)
@@ -56,6 +61,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Track visitor in the background
   void trackVisitor(project.id)
+
+  // Fetch owner's subscription for feature gating (White-label & Ads)
+  const { data: sub } = await (supabase as any)
+    .from("subscriptions")
+    .select("*")
+    .eq("user_id", project.user_id)
+    .maybeSingle()
+
+  const features = sub ? PLAN_FEATURES[sub.plan as PlanType] : PLAN_FEATURES.free
 
   return (
     <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--text-primary)] selection:bg-[color:var(--accent)] selection:text-black scroll-smooth">
@@ -141,35 +155,30 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 className="w-full rounded-2xl shadow-2xl transition-impeccable hover:border-neutral-700"
               />
            </div>
+
+           {/* Ads for Free Plan */}
+           {features.ads && (
+             <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-amber-500/10 bg-amber-500/5 space-y-3 animate-in fade-in duration-500 mt-12">
+               <div className="h-2 w-12 bg-amber-500/20 rounded-full" />
+               <p className="text-[10px] uppercase font-black tracking-[0.3em] text-amber-500 animate-pulse">Sponsored Atmosphere</p>
+               <h3 className="text-xl font-black italic uppercase tracking-tighter text-neutral-400">Your space could be here.</h3>
+               <p className="text-[10px] text-neutral-600 uppercase font-bold tracking-widest">Built with Venus Studio — Upgrade to remove</p>
+               <div className="h-2 w-12 bg-amber-500/20 rounded-full" />
+             </div>
+           )}
         </section>
 
-        {/* 5. Immersive Section */}
-        <section id="immersive" className="relative p-12 lg:p-24 rounded-[32px] overflow-hidden bg-neutral-900 border border-neutral-800 flex flex-col items-center text-center space-y-10 group shadow-2xl">
-           {/* Decorative Background Elements */}
-           <div className="absolute inset-0 bg-gradient-to-br from-[#C9A46C]/10 via-transparent to-transparent opacity-50" />
-           <div className="absolute -top-24 -right-24 h-64 w-64 bg-[#C9A46C]/10 blur-[100px] rounded-full group-hover:opacity-100 opacity-0 transition-opacity duration-1000" />
-           
-           <div className="relative space-y-4">
-              <div className="mx-auto h-16 w-16 rounded-2xl bg-black/40 backdrop-blur-md border border-white/5 flex items-center justify-center mb-6">
-                <Sparkles className="h-8 w-8 text-[color:var(--accent)] animate-pulse" />
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter leading-none">
-                 The Digital Atmosphere
-              </h2>
-              <p className="text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed">
-                 Enter the fully immersive pixel-streamed experience. Walk through the spaces, experience materials, and feel the light in real-time.
-              </p>
-           </div>
-
-           <a 
-              href={project.stream_url || "#"} 
-              target="_blank" 
-              className="relative group/btn inline-flex h-16 items-center justify-center rounded-2xl bg-[color:var(--accent)] px-10 text-xs font-black uppercase tracking-[0.3em] text-black transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[color:var(--accent)]/20"
-           >
-              Enter Immersive Experience
-              <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
-           </a>
-        </section>
+        {/* 5. Immersive Section / Experience Gate */}
+        <div id="immersive">
+          <ExperienceGate 
+            projectId={project.id}
+            projectName={project.name}
+            slug={slug}
+            authType={project.auth_type as "public" | "password" | "otp"}
+            rememberVisitor={project.remember_visitor}
+            streamUrl={project.stream_url || "#"}
+          />
+        </div>
 
         {/* 6. Lead Form Section */}
         <section id="inquiry" className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-24 items-start pt-16">
@@ -196,16 +205,23 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       </div>
 
-      {/* Footer Accent */}
-      <footer className="border-t border-neutral-800 mt-32 py-20 text-center space-y-8 bg-black/20">
-          <div className="flex flex-col items-center gap-6">
-              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800">
-                <p className="text-xl font-black text-[color:var(--accent)]">V</p>
-              </div>
-              <p className="text-[10px] uppercase font-bold tracking-[0.6em] text-neutral-600">Generated with Venus Studio</p>
-              <div className="h-12 w-[1px] bg-gradient-to-b from-neutral-800 to-transparent" />
-          </div>
-      </footer>
+      {/* Footer / Branding */}
+      {!features.white_label ? (
+        <footer className="border-t border-neutral-800 mt-32 py-20 text-center space-y-8 bg-black/20">
+            <div className="flex flex-col items-center gap-6">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800">
+                  <p className="text-xl font-black text-[color:var(--accent)]">V</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] uppercase font-bold tracking-[0.6em] text-neutral-600">Generated with Venus Studio</p>
+                  <p className="text-[10px] font-black text-[color:var(--accent)] uppercase tracking-widest group cursor-pointer hover:text-white transition-colors">Project by {project.name}</p>
+                </div>
+                <div className="h-12 w-[1px] bg-gradient-to-b from-neutral-800 to-transparent" />
+            </div>
+        </footer>
+      ) : (
+        <div className="h-32" /> // Spacer for white-label
+      )}
     </div>
   )
 }

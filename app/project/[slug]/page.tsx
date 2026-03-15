@@ -111,12 +111,16 @@ export default async function ProjectPublicPage({
 
               <Separator />
 
-              <LeadModal projectId={project.id} streamUrl={project.stream_url ?? "#"}>
-                <Button variant="primary" className="w-full h-11">
-                  Enter Experience
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </LeadModal>
+              <LeadModal 
+                projectId={project.id} 
+                onSuccess={() => window.open(project.stream_url ?? "#", "_blank")}
+                trigger={
+                  <Button variant="primary" className="w-full h-11">
+                    Enter Experience
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                }
+              />
 
               <p className="text-[10px] text-[color:var(--text-secondary)] text-center italic">
                 Verified high-performance pixel streaming session. No downloads required.

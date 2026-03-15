@@ -25,9 +25,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} min-h-screen bg-[color:var(--bg)] antialiased font-sans`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          {children}
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

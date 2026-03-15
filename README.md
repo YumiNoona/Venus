@@ -1,267 +1,115 @@
-## Venus · Architectural Experience Studio
+<div align="center">
+  <h1 align="center">🪐 VENUS STUDIO</h1>
+  <p align="center"><strong>The High-Performance Architectural Experience Engine</strong></p>
 
-Venus is a focused SaaS tool for architecture studios and ArchViz creators to present interactive, streamed experiences through calm, minimal project pages.
+  <p align="center">
+    <img src="https://img.shields.io/badge/Framework-Next.js%2015-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Backend-Supabase-emerald?style=for-the-badge&logo=supabase" alt="Supabase" />
+    <img src="https://img.shields.io/badge/Security-Hardenend-blue?style=for-the-badge" alt="Security" />
+    <img src="https://img.shields.io/badge/License-MIT-amber?style=for-the-badge" alt="License" />
+  </p>
 
-### Tech stack
+  <p align="center">
+    <i>Elevate your architectural presentations with immersive, interactive streaming experiences.</i>
+  </p>
+</div>
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI**: Lightweight shadcn-style primitives
-- **Backend & DB**: Supabase (PostgreSQL)
-- **Auth**: Supabase Auth
+---
 
-### Project structure
+## ✨ Premium Features
 
-- `app/` – App Router pages (dashboard, projects, leads, public project)
-- `components/` – Reusable UI and layout components
-- `lib/` – Supabase clients, auth helpers, utilities
-- `types/` – Database typings
-- `styles/` – Global Tailwind-powered styles
+Venus Studio transforms simple architectural renders into high-converting, interactive storytelling machines.
 
-### Environment variables
+- **🌌 Immersive Theming**: Real-time Day/Night cycle transitions using `framer-motion` and theme-aware rendering.
+- **🛡️ Secure Lead Gating**: Fused Identity & Authentication funnel (Password/OTP) with session-based unlocking.
+- **📈 Advanced Analytics**: Real-time visitor tracking with anonymized IP hashing and device fingerprinting.
+- **💳 Multi-Tier Subscription**: Built-in feature gating for **Starter, Studio, and Agency** plans.
+- **🖼️ Professional Editor**: Auto-slug generation, drag-and-drop cover management, and SaaS-style status chips.
+- **📄 High-Fidelity Exports**: Generate professional PDF reports and CSV lead exports with one click.
+- **🏢 White-Labeling**: Remove platform branding and connect custom domains (Agency only).
 
-Create a `.env.local` file with:
+---
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
+## 🛠️ Technical Matrix
 
-These are used in `lib/supabase-browser.ts` and `lib/supabase-server.ts` to create browser and server Supabase clients.
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | Next.js 15 (App Router) | Core Application Logic |
+| **Backend** | Supabase (PostgreSQL) | Real-time Database & Auth |
+| **Styling** | Tailwind CSS / Vanilla CSS | High-Performance Aesthetics |
+| **Animations** | Framer Motion | Fluid UI/UX Transitions |
+| **Security** | Bcrypt / SHA-256 | Data Privacy & Hardening |
+| **Types** | TypeScript | End-to-end Type Safety |
 
-### Database schema (Supabase)
+---
 
-Create the following tables in Supabase (SQL editor):
+## 🚀 Getting Started
 
-```sql
-create table public.users (
-  id uuid primary key,
-  email text,
-  name text,
-  created_at timestamp with time zone default now()
-);
-
-create table public.projects (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  name text not null,
-  slug text not null unique,
-  thumbnail_light text,
-  thumbnail_dark text,
-  short_description text,
-  long_description text,
-  stream_url text,
-  auth_type text not null default 'public',
-  password text,
-  published boolean not null default false,
-  created_at timestamp with time zone default now()
-);
-
-create table public.leads (
-  id uuid primary key default gen_random_uuid(),
-  project_id uuid not null references public.projects(id) on delete cascade,
-  name text not null,
-  phone text,
-  email text,
-  verified boolean not null default false,
-  created_at timestamp with time zone default now()
-);
-
-create table public.visitors (
-  id uuid primary key default gen_random_uuid(),
-  project_id uuid not null references public.projects(id) on delete cascade,
-  lead_id uuid references public.leads(id),
-  ip text,
-  device text,
-  visited_at timestamp with time zone default now()
-);
-```
-
-### Row-level security (RLS)
-
-Enable RLS on the main tables:
-
-```sql
-alter table public.users enable row level security;
-alter table public.projects enable row level security;
-alter table public.leads enable row level security;
-alter table public.visitors enable row level security;
-```
-
-#### Users
-
-```sql
-create policy "Users can see their profile"
-  on public.users
-  for select
-  using (auth.uid() = id);
-
-create policy "Users can insert their profile"
-  on public.users
-  for insert
-  with check (auth.uid() = id);
-```
-
-#### Projects
-
-```sql
-create policy "Users can manage their projects"
-  on public.projects
-  for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
-
-create policy "Anyone can view published projects by slug"
-  on public.projects
-  for select
-  using (published = true);
-```
-
-#### Leads
-
-```sql
-create policy "Public can create leads"
-  on public.leads
-  for insert
-  with check (
-    exists (
-      select 1
-      from public.projects p
-      where p.id = project_id
-        and p.published = true
-    )
-  );
-
-create policy "Studio can read leads through their projects"
-  on public.leads
-  for select
-  using (
-    exists (
-      select 1
-      from public.projects p
-      where p.id = project_id
-        and p.user_id = auth.uid()
-    )
-  );
-```
-
-#### Visitors
-
-```sql
-create policy "Public can insert visitors"
-  on public.visitors
-  for insert
-  with check (true);
-
-create policy "Studio can see visitors for their projects"
-  on public.visitors
-  for select
-  using (
-    exists (
-      select 1
-      from public.projects p
-      where p.id = project_id
-        and p.user_id = auth.uid()
-    )
-  );
-```
-
-### Running locally
+### 1. Environment Configuration
+Create a `.env.local` file in the root directory:
 
 ```bash
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+```
+
+### 2. Database Synchronization
+Apply the schema provided in [migration.sql](file:///f:/AI/Venus/supabase/migration.sql) to your Supabase SQL editor. This handles:
+- ENUM definitions for security.
+- RLS Policy enforcement.
+- Subscription and project tracking.
+
+### 3. Local Development
+```bash
+# Install dependencies
 npm install
+
+# Launch development server
 npm run dev
 ```
 
-Visit `http://localhost:3000` for the marketing entry page, `/signup` to create a studio account, and `/dashboard` for the authenticated dashboard.
+Visit `http://localhost:3000` to begin.
 
 ---
 
-## Application structure
+## 📦 Project Architecture
 
-### App routes (`app/`)
-
-- `/` (`app/page.tsx`): marketing entry page with CTA to `/signup` and `/login`.
-- `/signup` (`app/signup/page.tsx`): studio signup, creates Supabase Auth user and inserts a `users` row.
-- `/login` (`app/login/page.tsx`): email/password login, redirects to `/dashboard`.
-- `/dashboard` (`app/dashboard/page.tsx`): protected overview with project/lead/visitor counts.
-- `/projects` (`app/projects/page.tsx`): protected project grid, one card per project.
-- `/projects/new` (`app/projects/new/page.tsx`): new project editor, uses `ProjectForm`.
-- `/projects/edit/[id]` (`app/projects/edit/[id]/page.tsx`): edit existing project for the current user.
-- `/leads` (`app/leads/page.tsx`): protected lead table across all projects.
-- `/project/[slug]` (`app/project/[slug]/page.tsx`): public project page, only serves rows where `published = true`.
-- `/api/visit` (`app/api/visit/route.ts`): records `visitors` row when a public project page loads.
-
-### Components (`components/`)
-
-- `navbar.tsx`: top bar shared across public pages, shows brand + auth state.
-- `sidebar.tsx`: left navigation for dashboard (Dashboard / Projects / Leads / Settings).
-- `dashboard-stats.tsx`: Vercel-style stat cards for projects, leads, visitors.
-- `project-card.tsx`: grid card with thumbnail, name, status, and Edit button.
-- `project-form.tsx`: client-side form for creating/updating projects, with live preview and slug generation/uniqueness logic.
-- `lead-modal.tsx`: lead capture dialog (name/phone/email) that inserts into `leads` then redirects to `stream_url`.
-- `visitor-tracker.tsx`: client-only tracker that POSTs to `/api/visit` once on page load.
-- `ui.tsx`: shared primitives (`Button`, `Card`, `Input`, `Textarea`, `Label`, `Badge`, `Dialog*`) encoding dark theme and micro-interactions.
-
-### Libraries & utilities (`lib/`)
-
-- `supabase-browser.ts`: browser Supabase client for client components.
-- `supabase-server.ts`: server Supabase client for server components and route handlers, with cookie integration.
-- `auth.ts`: `requireUser()` (guards dashboard routes) and `getOptionalUser()` (used in `Navbar`).
-- `slugify.ts`: stable slug generator from project name.
-- `utils.ts`: Tailwind `cn` helper.
-
-### Types & styling
-
-- `types/database.ts`: typed Supabase schema for `users`, `projects`, `leads`, `visitors`.
-- `styles/globals.css`: Tailwind setup, dark palette tokens, and shared utility classes like `.glass-panel` and `.btn-primary`.
+```text
+├── app/                  # Next.js App Router (Studio, Public, API)
+├── components/           # UI Library & Experience Components
+├── lib/                  # Server Actions, Auth helpers, & Database Config
+├── styles/               # Global CSS & Design Tokens
+├── supabase/             # Migration scripts & SQL Logic
+└── types/                # Auto-generated & Custom TypeScript definitions
+```
 
 ---
 
-## Implemented flows
+## 🔒 Security Standards
 
-- **Studio workflow**
-  - Sign up at `/signup` → profile row inserted into `users`.
-  - Log in at `/login` → redirected to `/dashboard`.
-  - Create/edit projects via `/projects/new` and `/projects/edit/[id]` using `ProjectForm`.
-  - Publish projects and share `/project/[slug]` URL with clients.
-- **Client workflow**
-  - Open `/project/[slug]` (only if `published = true`).
-  - Read story content, thumbnails, and details.
-  - Click “Dive experience” → `LeadModal` captures lead, inserts into `leads`, then redirects to validated `https://` streaming URL.
-- **Analytics**
-  - `/dashboard` shows counts for projects, leads, visitors.
-  - `/leads` lists latest leads with project context and contact info.
-  - `VisitorTracker` + `/api/visit` record basic visitor events on public project views.
+Venus is built with a **Privacy-First** approach:
+- **Zero Raw IP Storage**: Every visitor IP is hashed using SHA-256 before storage.
+- **Idempotent Tracking**: 60-second window prevents analytics inflation from page reloads.
+- **Server-Side Enforcement**: All feature gates and mutations run purely on the server.
+- **Password Protection**: Industry-standard `bcrypt` hashing for all project passwords.
 
 ---
 
-## Security & server/client boundaries
+## 📜 License
 
-- **Supabase clients**
-  - Server components and API routes use `lib/supabase-server.ts`.
-  - Client components use `lib/supabase-browser.ts`.
-- **RLS-backed access control**
-  - Projects: only owner (`user_id = auth.uid()`) can manage; anyone can read `published = true` rows.
-  - Leads: public can insert for existing published projects; only owners can read leads on their projects.
-  - Visitors: public can insert; only owners can read visitors on their projects.
-  - Users: each user can see/insert only their own profile row.
-- **Public route safety**
-  - `/project/[slug]` always filters by `slug` **and** `published = true`.
-  - Streaming URLs are validated to start with `https://` before redirecting clients.
+This project is licensed under the **MIT License**.
+
+Copyright (c) 2026 Venus Studio.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-## Pending / intentionally out of scope
-
-The following items from the original product brief are **not implemented yet** and are good candidates for future work:
-
-- Settings page content and studio-level configuration.
-- Explicit logout button / sign-out flow.
-- Enforcing password-protected or OTP-based client access (`auth_type = 'password' | 'otp'` exists but is not wired).
-- Advanced analytics charts or time-series visualizations (only counts and tables are present).
-- Multi-tenant organizations or team accounts.
-- Billing, subscription plans, and payments.
-- Custom domains per studio.
-
+<div align="center">
+  <p>Built for architects who demand excellence.</p>
+  <p><strong>Venus Studio &copy; 2026</strong></p>
+</div>

@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { format } from "date-fns"
 import { LeadTableActions } from "./lead-actions"
-import { getLeads } from "./actions"
+import { getLeads, verifyExportAccess } from "./actions"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 
@@ -51,9 +51,15 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
     return () => clearTimeout(timer)
   }, [search, projectId, fromDate, toDate])
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     if (leads.length === 0) return
     
+    const verification = await verifyExportAccess("csv");
+    if (!verification.allowed) {
+      alert(verification.error);
+      return;
+    }
+
     const rows = leads.map(l => ({
       Name: l.name,
       Email: l.email,
@@ -80,8 +86,15 @@ export function LeadsClient({ initialLeads, projects }: LeadsClientProps) {
     document.body.removeChild(link)
   }
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
     if (leads.length === 0) return
+
+    const verification = await verifyExportAccess("pdf");
+    if (!verification.allowed) {
+      alert(verification.error);
+      return;
+    }
+
     const doc = new jsPDF()
     
     doc.setFontSize(18)

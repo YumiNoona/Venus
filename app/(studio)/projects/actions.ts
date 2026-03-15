@@ -41,6 +41,23 @@ export async function deleteProject(projectId: string) {
     return { success: false, error: error.message }
   }
 
+  // Decrement Usage
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: sub } = await (supabase as any)
+      .from("subscriptions")
+      .select("projects_used")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    
+    if (sub && sub.projects_used > 0) {
+      await (supabase as any)
+        .from("subscriptions")
+        .update({ projects_used: sub.projects_used - 1 })
+        .eq("user_id", user.id);
+    }
+  }
+
   revalidatePath("/projects")
   revalidatePath("/dashboard")
   return { success: true }

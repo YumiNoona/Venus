@@ -33,6 +33,7 @@ create table if not exists public.projects (
   published         boolean not null default false,
   view_count        bigint not null default 0,
   lead_count        bigint not null default 0,
+  remember_visitor  boolean not null default true,
   created_at        timestamptz default now()
 );
 
@@ -150,3 +151,27 @@ begin
   where id = project_id;
 end;
 $$ language plpgsql security definer;
+
+-- ─── Subscriptions ──────────────────────────────────────
+create table if not exists public.subscriptions (
+  id                  uuid primary key default uuid_generate_v4(),
+  user_id             uuid not null references public.users(id) on delete cascade unique,
+  plan                text not null default 'free', -- 'free', 'starter', 'studio', 'agency'
+  credits             integer not null default 1,     -- max projects for plan
+  projects_used       integer not null default 0,
+  status              text not null default 'active',
+  current_period_end  timestamptz,
+  created_at          timestamptz default now(),
+  plan_updated_at     timestamptz default now()
+);
+
+create index if not exists idx_subscriptions_user_id on public.subscriptions(user_id);
+
+-- Enable RLS for Subscriptions
+alter table public.subscriptions enable row level security;
+
+create policy "subscriptions_select_own" on public.subscriptions
+  for select using (auth.uid() = user_id);
+
+-- ─── Indices for Funnel ────────────────────────────────
+create index if not exists idx_visitors_lead_id on public.visitors(lead_id);

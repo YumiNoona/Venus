@@ -103,3 +103,22 @@ export async function getAdminProjects() {
   if (error) throw error;
   return data;
 }
+import { PLAN_FEATURES, type PlanType } from "@/lib/config/plans"
+import { getSubscription } from "@/lib/actions/billing"
+
+export async function verifyExportAccess(type: "csv" | "pdf") {
+  const sub = await getSubscription();
+  if (!sub) return { allowed: false, error: "No active subscription found." };
+
+  const features = PLAN_FEATURES[sub.plan as PlanType];
+  const isAllowed = type === "csv" ? features.csv_export : features.pdf_export;
+
+  if (!isAllowed) {
+    return { 
+      allowed: false, 
+      error: `Upgrade to ${type === "csv" ? "Starter" : "Studio"} plan to unlock ${type.toUpperCase()} exports.` 
+    };
+  }
+
+  return { allowed: true };
+}

@@ -10,9 +10,10 @@ import { submitLead } from "@/lib/actions/leads"
 
 interface LeadFormProps {
   projectId: string;
+  onFinish?: () => void;
 }
 
-export function LeadForm({ projectId }: LeadFormProps) {
+export function LeadForm({ projectId, onFinish }: LeadFormProps) {
   const [phone, setPhone] = useState<string | undefined>()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -32,6 +33,10 @@ export function LeadForm({ projectId }: LeadFormProps) {
     
     if (result.success) {
       setSuccess(true)
+      if (onFinish) {
+        // Delay slightly for success animation
+        setTimeout(onFinish, 1500);
+      }
     } else {
       setError(result.error || "Failed to send inquiry.")
     }

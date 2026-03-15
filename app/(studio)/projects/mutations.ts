@@ -4,6 +4,8 @@ import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { revalidatePath } from "next/cache"
 import bcrypt from "bcrypt"
 import { type Database } from "@/types/database"
+import { PLAN_FEATURES, type PlanType } from "@/lib/config/plans"
+import { getSubscription } from "@/lib/actions/billing"
 
 type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"]
 type ProjectUpdate = Database["public"]["Tables"]["projects"]["Update"]
@@ -25,7 +27,8 @@ export async function saveProject(payload: any) {
   // 1. Prepare data
   const projectData: any = {
     ...rest,
-    user_id: user.id
+    user_id: user.id,
+    remember_visitor: payload.remember_visitor ?? true
   };
 
   // 2. Hash password if provided
@@ -38,6 +41,14 @@ export async function saveProject(payload: any) {
   let result;
 
   if (id) {
+    // 3. OTP Restriction Check on Update
+    const sub = await getSubscription();
+    const features = sub ? PLAN_FEATURES[sub.plan as PlanType] : PLAN_FEATURES.free;
+    
+    if (payload.auth_type === "otp" && !features.otp_auth) {
+      return { success: false, error: "OTP verification requires Studio plan." };
+    }
+
     // Update
     result = await supabase
       .from("projects")
@@ -47,12 +58,35 @@ export async function saveProject(payload: any) {
       .select()
       .single();
   } else {
-    // Insert
+    // Insert - 2a. Limit Check
+    const sub = await getSubscription();
+    const features = sub ? PLAN_FEATURES[sub.plan as PlanType] : PLAN_FEATURES.free;
+    
+    if ((sub?.projects_used || 0) >= features.projects) {
+      return { 
+        success: false, 
+        error: `Project limit reached for ${sub?.plan || 'free'} plan (${features.projects}/${features.projects}). Please upgrade in the Billing tab.` 
+      };
+    }
+
+    // 2b. OTP Restriction Check on Insert
+    if (payload.auth_type === "otp" && !features.otp_auth) {
+      return { success: false, error: "OTP verification requires Studio plan." };
+    }
+
     result = await supabase
       .from("projects")
       .insert(projectData)
       .select()
       .single();
+
+    // 2c. Increment Usage if successful
+    if (!result.error && sub) {
+      await (supabase as any)
+        .from("subscriptions")
+        .update({ projects_used: (sub.projects_used || 0) + 1 })
+        .eq("user_id", user.id);
+    }
   }
 
   if (result.error) {

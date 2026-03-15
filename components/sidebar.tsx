@@ -7,7 +7,8 @@ import {
   FolderKanban, 
   Users, 
   Settings, 
-  LogOut 
+  LogOut,
+  CreditCard
 } from "lucide-react";
 import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ const menuItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "Leads", href: "/leads", icon: Users },
+  { name: "Billing", href: "/billing", icon: CreditCard },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
