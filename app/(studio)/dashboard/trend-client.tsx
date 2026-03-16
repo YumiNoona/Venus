@@ -20,8 +20,8 @@ export function ActivityTrendClient({ initialData }: { initialData: any[] }) {
   const visitorTrend = trendData || initialData;
 
   return (
-    <Card className="p-6 bg-neutral-900/40 border-neutral-800 space-y-6">
-      <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Visitors (Last 7 Days)</p>
+    <Card className="p-6 bg-bg-soft/40 border-border space-y-6">
+      <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Visitors (Last 7 Days)</p>
       <div className="space-y-4">
          {Array.from({ length: 7 }).map((_, i) => {
             const date = new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000);
@@ -30,20 +30,20 @@ export function ActivityTrendClient({ initialData }: { initialData: any[] }) {
             
             return (
               <div key={i} className="flex items-center gap-4">
-                <span className="text-[10px] text-neutral-500 w-12 font-mono">{date.toLocaleDateString(undefined, { weekday: 'short' })}</span>
+                <span className="text-[10px] text-text-secondary w-12 font-mono">{date.toLocaleDateString(undefined, { weekday: 'short' })}</span>
                 <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                   <div 
-                     className="h-full bg-[color:var(--accent)] transition-all duration-1000" 
+                     className="h-full bg-accent transition-all duration-1000" 
                      style={{ width: `${Math.min(100, (count / 10) * 100)}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-neutral-400 font-bold tabular-nums">{count}</span>
+                <span className="text-[10px] text-text-secondary font-bold tabular-nums">{count}</span>
               </div>
             );
          })}
       </div>
       <Separator className="opacity-10" />
-      <p className="text-[10px] leading-relaxed text-neutral-600 italic">
+      <p className="text-[10px] leading-relaxed text-text-secondary italic">
          * Trends show daily engagement peaks.
       </p>
     </Card>

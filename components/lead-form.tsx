@@ -49,7 +49,7 @@ export function LeadForm({ projectId, onFinish }: LeadFormProps) {
            <Sparkles className="h-8 w-8 text-emerald-500" />
         </div>
         <h3 className="text-xl font-bold">Inquiry Received</h3>
-        <p className="text-sm text-neutral-500">Our studio team will contact you shortly.</p>
+        <p className="text-sm text-text-secondary">Our studio team will contact you shortly.</p>
       </div>
     )
   }
@@ -59,13 +59,13 @@ export function LeadForm({ projectId, onFinish }: LeadFormProps) {
       <input type="hidden" name="projectId" value={projectId} />
       
       <div className="space-y-2">
-        <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 ml-1">Full Name</Label>
-        <Input name="name" placeholder="John Doe" required className="bg-black/20 border-neutral-800 focus:border-[color:var(--accent)] h-14 text-sm" />
+        <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary ml-1">Full Name</Label>
+        <Input name="name" placeholder="John Doe" required className="bg-bg-soft border-border focus:border-accent h-14 text-sm" />
       </div>
 
       <div className="space-y-2">
-        <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 ml-1">Work Email</Label>
-        <Input name="email" type="email" placeholder="john@example.com" required className="bg-black/20 border-neutral-800 focus:border-[color:var(--accent)] h-14 text-sm" />
+        <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary ml-1">Work Email</Label>
+        <Input name="email" type="email" placeholder="john@example.com" required className="bg-bg-soft border-border focus:border-accent h-14 text-sm" />
       </div>
 
       <div className="space-y-2 md:col-span-2 inquiry-phone-input">
@@ -87,7 +87,7 @@ export function LeadForm({ projectId, onFinish }: LeadFormProps) {
 
       <div className="md:col-span-2 pt-4">
          <SubmitButton />
-         <p className="text-[10px] text-center text-neutral-600 mt-6 tracking-widest uppercase">
+         <p className="text-[10px] text-center text-text-secondary mt-6 tracking-widest uppercase">
             Confidentiality guaranteed.
          </p>
       </div>
@@ -98,7 +98,7 @@ export function LeadForm({ projectId, onFinish }: LeadFormProps) {
 function SubmitButton() {
   const { pending } = useFormStatus()
   return (
-    <Button type="submit" size="lg" disabled={pending} className="w-full h-14 shadow-lg shadow-[color:var(--accent)]/10 font-black uppercase text-[10px] tracking-[0.3em] transition-all hover:translate-y-[-2px]">
+    <Button type="submit" size="lg" disabled={pending} className="w-full h-14 shadow-lg shadow-accent/10 font-black uppercase text-[10px] tracking-[0.3em] transition-all hover:translate-y-[-2px]">
       {pending ? "Sending..." : "Send Inquiry"}
       {!pending && <ArrowRight className="ml-3 h-5 w-5" />}
     </Button>

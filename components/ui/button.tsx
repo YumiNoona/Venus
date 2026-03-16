@@ -20,8 +20,8 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-primary text-black hover:brightness-110 active:scale-[0.98]",
-    secondary: "bg-surface text-text hover:bg-surface-hover active:scale-[0.98] border border-border",
+    primary: "bg-primary text-bg hover:brightness-110 active:scale-[0.98]",
+    secondary: "bg-bg-soft text-text hover:bg-bg-soft/80 active:scale-[0.98] border border-border",
     ghost: "bg-transparent text-text hover:bg-bg-soft active:scale-[0.98]",
     danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20 active:scale-[0.98] border border-red-500/20",
     outline: "bg-transparent border border-border text-text hover:bg-bg-soft"

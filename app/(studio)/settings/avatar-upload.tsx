@@ -69,7 +69,7 @@ export function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
         className="relative group cursor-pointer"
         onClick={() => fileInputRef.current?.click()}
       >
-        <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-neutral-800 bg-neutral-900 flex items-center justify-center transition-all group-hover:border-[color:var(--accent)] shadow-xl">
+        <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-border bg-bg-soft flex items-center justify-center transition-all group-hover:border-accent shadow-xl">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img 
@@ -78,14 +78,14 @@ export function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
               className="h-full w-full object-cover transition-opacity group-hover:opacity-40" 
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center text-neutral-600 transition-opacity group-hover:opacity-40">
+            <div className="h-full w-full flex items-center justify-center text-text-secondary transition-opacity group-hover:opacity-40">
               <Camera className="h-8 w-8" />
             </div>
           )}
           
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             {isUploading ? (
-              <Loader2 className="h-6 w-6 text-[color:var(--accent)] animate-spin" />
+              <Loader2 className="h-6 w-6 text-accent animate-spin" />
             ) : (
               <Camera className="h-6 w-6 text-white" />
             )}
@@ -108,7 +108,7 @@ export function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
         capture="user"
       />
       
-      <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">
+      <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">
         Click to update avatar
       </p>
     </div>

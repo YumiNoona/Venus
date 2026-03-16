@@ -35,7 +35,7 @@ export default async function EditProjectPage({
         <h1 className="text-xl font-semibold tracking-tight">
           Edit project
         </h1>
-        <p className="mt-1 text-xs text-[color:var(--text-secondary)]">
+        <p className="mt-1 text-xs text-text-secondary">
           Adjust content, thumbnails, and access without breaking the
           public link.
         </p>

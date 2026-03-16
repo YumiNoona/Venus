@@ -48,18 +48,18 @@ export function DashboardStats({
       {items.map((item, i) => (
         <Card key={item.label} className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-200" style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-[color:var(--text-secondary)]">
+            <span className="text-sm font-medium text-text-secondary">
               {item.label}
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900">
-              <item.icon className="h-4 w-4 text-[color:var(--accent)]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-bg-soft">
+              <item.icon className="h-4 w-4 text-accent" />
             </div>
           </div>
           <div className="space-y-1">
-            <div className="text-3xl font-semibold tracking-tight text-[color:var(--text-primary)] tabular-nums">
+            <div className="text-3xl font-semibold tracking-tight text-text tabular-nums">
               {item.value}
             </div>
-            <p className="text-xs text-[color:var(--text-secondary)] leading-none italic">
+            <p className="text-xs text-text-secondary leading-none italic">
               {item.description}
             </p>
           </div>

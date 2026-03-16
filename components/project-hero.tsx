@@ -30,7 +30,7 @@ export function ProjectHero({
 
   if (!mounted) {
     return (
-      <div className="relative h-[90vh] w-full bg-neutral-900 border-b border-neutral-800" />
+      <div className="relative h-[90vh] w-full bg-bg-soft border-b border-border" />
     );
   }
 

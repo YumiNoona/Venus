@@ -44,7 +44,7 @@ export default function BillingPage() {
       period: "/month",
       credits: "10 Projects",
       features: ["Basic Stream Analytics", "Lead Export (CSV)", "Password Protection"],
-      color: "border-neutral-800"
+      color: "border-border"
     },
     {
       name: "Studio",
@@ -52,7 +52,7 @@ export default function BillingPage() {
       period: "/month",
       credits: "Unlimited Projects",
       features: ["Advanced Transitions", "OTP Verification", "PDF Report Generation", "Dedicated Support"],
-      color: "border-[color:var(--accent)] shadow-xl shadow-[color:var(--accent)]/5",
+      color: "border-accent shadow-xl shadow-accent/10",
       popular: true
     },
     {
@@ -61,44 +61,44 @@ export default function BillingPage() {
       period: "/month",
       credits: "Enterprise",
       features: ["Custom Domain Bind", "White-label Branding", "Multi-user Access", "API Access"],
-      color: "border-neutral-800"
+      color: "border-border"
     }
   ];
 
   if (loading) return (
     <div className="p-8 animate-pulse space-y-8">
-      <div className="h-8 w-48 bg-neutral-900 rounded" />
-      <div className="h-64 w-full bg-neutral-900 rounded" />
+      <div className="h-8 w-48 bg-bg-soft rounded" />
+      <div className="h-64 w-full bg-bg-soft rounded" />
     </div>
   );
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-12 pb-20">
       <header className="space-y-2">
-        <h1 className="text-3xl font-black tracking-tighter uppercase italic">Billing & Usage</h1>
-        <p className="text-sm text-neutral-500 uppercase tracking-widest font-black">Manage your subscription and project credits</p>
+        <h1 className="text-3xl font-black tracking-tighter uppercase italic text-text">Billing & Usage</h1>
+        <p className="text-xs text-text-secondary uppercase tracking-[0.2em] font-black">Manage your subscription and project credits</p>
       </header>
 
       {/* Current Usage Status */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         <Card className="p-6 bg-neutral-900/40 border-neutral-800 flex flex-col justify-between space-y-6">
+         <Card className="p-6 bg-bg-soft/40 border-border flex flex-col justify-between space-y-6">
             <div className="space-y-1">
-               <Label className="text-[10px] uppercase font-black text-neutral-500 tracking-[0.2em]">Active Plan</Label>
-               <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-black tracking-tight uppercase italic">{subscription.plan}</h2>
-                  <Badge variant="accent" className="border-[color:var(--accent)]/30 text-[color:var(--accent)] bg-[color:var(--accent)]/5 text-[9px]">Active</Badge>
-               </div>
+               <Label className="text-[10px] uppercase font-black text-text-secondary tracking-[0.2em]">Active Plan</Label>
+                <div className="flex items-center gap-2">
+                   <h2 className="text-2xl font-black tracking-tight uppercase italic text-text">{subscription.plan}</h2>
+                   <Badge variant="accent" className="border-accent/30 text-accent bg-accent/5 text-[9px]">Active</Badge>
+                </div>
             </div>
-            <p className="text-[10px] text-neutral-600 uppercase font-bold tracking-widest">Next renewal: April 15, 2026</p>
+            <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Next renewal: April 15, 2026</p>
          </Card>
 
-         <Card className="p-6 bg-neutral-900/40 border-neutral-800 space-y-6 md:col-span-2">
+         <Card className="p-6 bg-bg-soft/40 border-border space-y-6 md:col-span-2">
             <div className="flex justify-between items-end">
-               <div className="space-y-1">
-                  <Label className="text-[10px] uppercase font-black text-neutral-500 tracking-[0.2em]">Project Usage</Label>
-                  <h2 className="text-2xl font-black tracking-tight uppercase italic">{subscription.credits === Infinity ? 'Unlimited' : `${subscription.credits} Available`}</h2>
-               </div>
-               <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">Usage: {subscription.projects_used} / {subscription.credits === Infinity ? '∞' : subscription.credits}</p>
+                <div className="space-y-1">
+                   <Label className="text-[10px] uppercase font-black text-text-secondary tracking-[0.2em]">Project Usage</Label>
+                   <h2 className="text-2xl font-black tracking-tight uppercase italic text-text">{subscription.credits === Infinity ? 'Unlimited' : `${subscription.credits} Available`}</h2>
+                </div>
+               <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Usage: {subscription.projects_used} / {subscription.credits === Infinity ? '∞' : subscription.credits}</p>
             </div>
             <Progress value={subscription.credits === Infinity ? 0 : (subscription.projects_used/subscription.credits)*100} className="h-1.5" />
          </Card>
@@ -107,15 +107,15 @@ export default function BillingPage() {
       {/* Plans Section */}
       <section className="space-y-8">
          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-black tracking-tight uppercase italic">Upgrade Membership</h2>
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">Scale your studio presence with professional features</p>
+            <h2 className="text-2xl font-black tracking-tight uppercase italic text-text">Upgrade Membership</h2>
+            <p className="text-xs text-text-secondary uppercase tracking-[0.2em] font-bold">Scale your studio presence with professional features</p>
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((plan) => (
-               <Card key={plan.name} className={cn("p-8 bg-neutral-900/20 backdrop-blur-xl relative flex flex-col justify-between group transition-all hover:translate-y-[-4px]", plan.color)}>
+             {plans.map((plan) => (
+               <Card key={plan.name} className={cn("p-8 bg-bg-soft/50 backdrop-blur-xl relative flex flex-col justify-between group transition-all hover:translate-y-[-4px]", plan.color)}>
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[color:var(--accent)] text-black text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-accent text-black text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl shadow-accent/20 z-10 transition-transform group-hover:scale-110">
                        Most Popular
                     </div>
                   )}
@@ -125,18 +125,18 @@ export default function BillingPage() {
                         <h3 className="text-xl font-black uppercase italic tracking-tight">{plan.name}</h3>
                         <div className="flex items-baseline gap-1">
                            <span className="text-3xl font-black">{plan.price}</span>
-                           <span className="text-xs text-neutral-500 font-bold uppercase tracking-widest">{plan.period}</span>
+                           <span className="text-xs text-text-secondary font-bold uppercase tracking-widest">{plan.period}</span>
                         </div>
                      </div>
-
+ 
                      <div className="space-y-1">
-                        <p className="text-[10px] font-black text-[color:var(--accent)] uppercase tracking-widest">{plan.credits}</p>
-                        <Separator className="bg-neutral-800" />
+                        <p className="text-[10px] font-black text-accent uppercase tracking-widest">{plan.credits}</p>
+                        <Separator className="bg-border" />
                      </div>
 
                      <ul className="space-y-3">
                         {plan.features.map(feat => (
-                           <li key={feat} className="flex items-start gap-3 text-[10px] font-bold text-neutral-400 uppercase tracking-tighter leading-tight">
+                           <li key={feat} className="flex items-start gap-3 text-[10px] font-bold text-text-secondary uppercase tracking-tighter leading-tight">
                               <Check className="h-3 w-3 text-emerald-500 shrink-0" />
                               {feat}
                            </li>
@@ -144,11 +144,10 @@ export default function BillingPage() {
                      </ul>
                   </div>
 
-                  <Button 
-                    variant={plan.popular ? "primary" : "ghost"} 
+                  <Button                     variant={plan.popular ? "primary" : "ghost"} 
                     className={cn(
                       "w-full mt-8 h-12 text-[10px] font-black uppercase tracking-[0.2em]",
-                      !plan.popular && "border-neutral-800"
+                      !plan.popular && "border-border"
                     )}
                     onClick={() => handleUpgrade(plan.name)}
                     disabled={subscription.plan === plan.name.toLowerCase()}
@@ -165,7 +164,7 @@ export default function BillingPage() {
          <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
          <div className="space-y-1">
             <h4 className="text-xs font-black uppercase tracking-widest text-amber-500">How credits work</h4>
-            <p className="text-[10px] text-neutral-500 leading-relaxed font-bold uppercase tracking-tight">
+            <p className="text-[10px] text-text-secondary leading-relaxed font-bold uppercase tracking-tight">
                Each active project consumes 1 credit. Uploading thumbnails or changing stream endpoints does not cost extra. Credits renew at the start of your billing cycle.
             </p>
          </div>

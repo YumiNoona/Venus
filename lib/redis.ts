@@ -16,15 +16,17 @@ const redisWithLogging = new Proxy(new Redis({
 }), {
   get(target, prop, receiver) {
     const val = Reflect.get(target, prop, receiver);
-    if (typeof val === 'function' && ['get', 'hget', 'json.get'].includes(prop as string)) {
+    if (typeof val === 'function') {
       return async (...args: any[]) => {
         try {
           const result = await val.apply(target, args);
-          console.log(`[Redis] ${prop as string} ${result ? 'HIT' : 'MISS'}: ${args[0]}`);
+          if (['get', 'hget', 'json.get'].includes(prop as string)) {
+            console.log(`[Redis] ${prop as string} ${result ? 'HIT' : 'MISS'}: ${args[0]}`);
+          }
           return result;
         } catch (e) {
           console.warn(`[Redis] ${prop as string} ERROR:`, e);
-          return null;
+          return null; // Graceful fallback
         }
       };
     }
@@ -37,4 +39,5 @@ export const redis = redisWithLogging;
 export const CACHE_KEYS = {
   PROJECT_STATS: (userId: string) => `studio:${userId}:stats`,
   PROJECT_METADATA: (slug: string) => `project:${slug}:meta`,
+  CUSTOM_DOMAIN: (domain: string) => `domain:${domain}:meta`,
 };

@@ -23,6 +23,7 @@ create table if not exists public.projects (
   user_id           uuid not null references public.users(id) on delete cascade,
   name              text not null,
   slug              text unique not null,
+  custom_domain     text unique,
   thumbnail_light   text,
   thumbnail_dark    text,
   short_description text,
@@ -36,11 +37,16 @@ create table if not exists public.projects (
   lead_count        bigint not null default 0,
   theme             text not null default 'minimal',
   remember_visitor  boolean not null default true,
+  location          text,
+  architect         text,
+  area              text,
+  year              text,
   created_at        timestamptz default now()
 );
 
 create index if not exists idx_projects_user_id on public.projects(user_id);
 create index if not exists idx_projects_slug    on public.projects(slug);
+create index if not exists idx_projects_custom_domain on public.projects(custom_domain);
 
 -- ─── Leads ──────────────────────────────────────────────
 create table if not exists public.leads (

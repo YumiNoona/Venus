@@ -138,14 +138,14 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
           
           <div className="w-full space-y-4">
              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Full Name</Label>
+                <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary">Full Name</Label>
                 <div className="flex gap-2">
                    <div className="relative flex-1">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
                       <Input 
                         value={name} 
                         onChange={(e) => setName(e.target.value)}
-                        className="pl-10 h-11 bg-neutral-900 border-neutral-800"
+                        className="pl-10 h-11 bg-bg-soft border-border text-text"
                       />
                    </div>
                    <Button 
@@ -161,14 +161,14 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
              </div>
 
              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Email Address</Label>
+                <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary">Email Address</Label>
                 <div className="flex gap-2">
                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
                       <Input 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-11 bg-neutral-900 border-neutral-800"
+                        className="pl-10 h-11 bg-bg-soft border-border text-text"
                       />
                    </div>
                    <Button 
@@ -181,7 +181,7 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                      Update
                    </Button>
                 </div>
-                <p className="text-[10px] text-neutral-600">You will need to verify the new email address.</p>
+                <p className="text-[10px] text-text-secondary">You will need to verify the new email address.</p>
              </div>
           </div>
         </div>
@@ -193,28 +193,28 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
       <section className="space-y-6">
         <div className="space-y-4">
            <div className="flex items-center gap-2">
-              <Key className="h-4 w-4 text-neutral-500" />
-              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500">Security</h3>
+              <Key className="h-4 w-4 text-text-secondary" />
+              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary">Security</h3>
            </div>
            
-           <Card className="p-6 space-y-6 bg-neutral-900/50 border-neutral-800">
+           <Card className="p-6 space-y-6 bg-bg-soft/50 border-border">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">New Password</Label>
+                    <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary">New Password</Label>
                     <Input 
                         type="password" 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="bg-neutral-950 border-neutral-800"
+                        className="bg-bg-soft border-border text-text"
                     />
                  </div>
                  <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Confirm Password</Label>
+                    <Label className="text-[10px] uppercase font-bold tracking-widest text-text-secondary">Confirm Password</Label>
                     <Input 
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="bg-neutral-950 border-neutral-800"
+                        className="bg-bg-soft border-border text-text"
                     />
                  </div>
               </div>
@@ -229,10 +229,10 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
               </Button>
            </Card>
 
-           <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-800 bg-neutral-900/30">
+           <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-bg-soft/30">
               <div className="space-y-0.5">
-                 <p className="text-xs font-semibold text-[color:var(--text-primary)]">Browser Sessions</p>
-                 <p className="text-[10px] text-neutral-500">Log out of all other devices currently active.</p>
+                 <p className="text-xs font-semibold text-text">Browser Sessions</p>
+                 <p className="text-[10px] text-text-secondary">Log out of all other devices currently active.</p>
               </div>
               <Button 
                 variant="ghost" 
@@ -264,14 +264,14 @@ export function AccountSettings({ user, profile }: AccountSettingsProps) {
                 Delete Account
               </Button>
            </DialogTrigger>
-            <DialogContent className="max-w-md bg-neutral-950 border-red-900/30">
+            <DialogContent className="max-w-md bg-bg border-red-900/30">
                <DialogHeader className="space-y-6">
                   <div className="flex items-center justify-center h-12 w-12 rounded-full bg-red-500/10 text-red-500 mx-auto">
                      <Trash2 className="h-6 w-6" />
                   </div>
                   <div className="space-y-2 text-center">
                      <DialogTitle className="text-lg font-bold text-red-500">Irreversible Action</DialogTitle>
-                     <DialogDescription className="text-xs text-neutral-500 leading-relaxed px-4">
+                     <DialogDescription className="text-xs text-text-secondary leading-relaxed px-4">
                         Deleting your account will permanently remove all your architectural projects, leads, and assets. This cannot be undone.
                      </DialogDescription>
                   </div>

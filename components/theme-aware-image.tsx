@@ -29,7 +29,7 @@ export function ThemeAwareImage({
   }, []);
 
   if (!mounted) {
-    return <div className={cn("bg-neutral-900 border border-neutral-800 rounded-2xl", aspectRatio, className)} />;
+    return <div className={cn("bg-bg-soft border border-border rounded-2xl", aspectRatio, className)} />;
   }
 
   const src = resolvedTheme === "light" ? lightSrc : darkSrc;
@@ -50,8 +50,8 @@ export function ThemeAwareImage({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center bg-neutral-900">
-            <Box className="h-12 w-12 text-neutral-800" />
+          <div className="h-full w-full flex items-center justify-center bg-bg-soft">
+            <Box className="h-12 w-12 text-border" />
           </div>
         )}
       </AnimatePresence>

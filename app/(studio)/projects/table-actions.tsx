@@ -67,7 +67,7 @@ export function ProjectTableActions({ projectId, published, slug }: ProjectTable
         <Button 
            variant="ghost" 
            size="sm" 
-           className={`h-8 w-8 p-0 ${published ? 'text-emerald-500' : 'text-neutral-500'}`}
+           className={`h-8 w-8 p-0 ${published ? 'text-emerald-500' : 'text-text-secondary'}`}
            onClick={handleToggle}
            disabled={isLoading}
            title={published ? "Unpublish" : "Publish"}

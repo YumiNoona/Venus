@@ -30,6 +30,9 @@ export default function LoginPage() {
 
     try {
       if (loginMode === "password") {
+        // Clear any stale local sessions before signing in
+        await supabase.auth.signOut();
+        
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,

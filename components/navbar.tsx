@@ -15,14 +15,14 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-40 h-16 border-b border-[color:var(--border)] bg-[color:var(--bg)]/80 backdrop-blur transition-impeccable">
+    <nav className="sticky top-0 z-40 h-16 border-b border-border bg-bg/80 backdrop-blur transition-impeccable">
       <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2 transition-impeccable hover:opacity-80" prefetch>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[color:var(--accent)] text-xs font-bold text-black transition-impeccable hover:scale-110">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-xs font-bold text-black transition-impeccable hover:scale-110">
             V
           </div>
-          <span className="text-sm font-semibold tracking-tight text-[color:var(--text-primary)]">
+          <span className="text-sm font-semibold tracking-tight text-text">
             Venus
           </span>
         </Link>
@@ -38,7 +38,7 @@ export default function Navbar() {
             </Link>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium text-[color:var(--text-secondary)] transition-impeccable hover:text-[color:var(--text-primary)]" prefetch>
+              <Link href="/login" className="text-sm font-medium text-text-secondary transition-impeccable hover:text-text" prefetch>
                 Sign in
               </Link>
               <Link href="/signup" prefetch>

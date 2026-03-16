@@ -2,7 +2,6 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { revalidatePath } from "next/cache"
-import bcrypt from "bcrypt"
 import { type Database } from "@/types/database"
 import { PLAN_FEATURES, type PlanType } from "@/lib/config/plans"
 import { getSubscription } from "@/lib/actions/billing"

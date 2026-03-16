@@ -50,7 +50,7 @@ export default async function ProjectPublicPage({
   if (!project) notFound();
 
   return (
-    <div className="flex min-h-screen flex-col bg-[color:var(--bg)]">
+    <div className="flex min-h-screen flex-col bg-bg">
       <Navbar />
       <VisitorTracker projectId={project.id} />
       
@@ -61,16 +61,16 @@ export default async function ProjectPublicPage({
             {/* Header info */}
             <div className="space-y-4">
               <Badge variant="accent">Architectural Experience</Badge>
-              <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text-primary)]">
+              <h1 className="text-4xl font-semibold tracking-tight text-text">
                 {project.name}
               </h1>
-              <p className="text-base text-[color:var(--text-secondary)] leading-relaxed max-w-2xl">
+              <p className="text-base text-text-secondary leading-relaxed max-w-2xl">
                 {project.short_description}
               </p>
             </div>
 
             {/* Media/Image Area */}
-            <div className="aspect-video w-full rounded-2xl border border-neutral-800 bg-neutral-900 overflow-hidden">
+            <div className="aspect-video w-full rounded-2xl border border-border bg-bg-soft overflow-hidden">
               {project.thumbnail_dark ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -88,10 +88,10 @@ export default async function ProjectPublicPage({
             {/* Project Narrative */}
             {project.long_description && (
               <div className="space-y-4 pt-4">
-                <h2 className="text-lg font-semibold text-[color:var(--text-primary)] border-b border-neutral-800 pb-2">
+                <h2 className="text-lg font-semibold text-text border-b border-border pb-2">
                   Project Narrative
                 </h2>
-                <div className="text-sm text-[color:var(--text-secondary)] leading-relaxed whitespace-pre-line">
+                <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
                   {project.long_description}
                 </div>
               </div>
@@ -100,14 +100,14 @@ export default async function ProjectPublicPage({
 
           {/* Sticky Sidebar / CTA */}
           <aside className="sticky top-28 space-y-6">
-            <div className="rounded-xl border border-neutral-800 bg-[color:var(--surface)] p-6 space-y-6 shadow-sm">
+            <div className="rounded-xl border border-border bg-bg-soft p-6 space-y-6 shadow-sm">
               <div className="space-y-4 text-center">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-[color:var(--accent)]">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-bg-soft border border-border text-accent">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-semibold text-[color:var(--text-primary)]">Interactive Session</h3>
-                  <p className="text-xs text-[color:var(--text-secondary)]">Secure endpoint connected</p>
+                  <h3 className="text-sm font-semibold text-text">Interactive Session</h3>
+                  <p className="text-xs text-text-secondary">Secure endpoint connected</p>
                 </div>
               </div>
 
@@ -124,7 +124,7 @@ export default async function ProjectPublicPage({
                 }
               />
 
-              <p className="text-[10px] text-[color:var(--text-secondary)] text-center italic">
+              <p className="text-[10px] text-text-secondary text-center italic">
                 Verified high-performance pixel streaming session. No downloads required.
               </p>
             </div>
@@ -133,8 +133,8 @@ export default async function ProjectPublicPage({
       </main>
 
       {/* Minimal Footer */}
-      <footer className="border-t border-neutral-800 py-6 mt-12 bg-neutral-950/50">
-        <div className="max-w-5xl mx-auto px-6 flex justify-between items-center text-[10px] text-[color:var(--text-secondary)] uppercase tracking-widest font-medium">
+      <footer className="border-t border-border py-6 mt-12 bg-bg/50">
+        <div className="max-w-5xl mx-auto px-6 flex justify-between items-center text-[10px] text-text-secondary uppercase tracking-widest font-medium">
           <span>Platform powered by Venus</span>
           <div className="flex items-center gap-2">
             <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />

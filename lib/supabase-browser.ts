@@ -9,7 +9,11 @@ if (!supabaseUrl || !supabaseKey && typeof window !== "undefined") {
   console.warn("Supabase environment variables are not set");
 }
 
+let client: ReturnType<typeof createBrowserClient<Database>> | undefined;
+
 export function createBrowserSupabaseClient() {
-  return createBrowserClient<Database>(supabaseUrl, supabaseKey);
+  if (client) return client;
+  client = createBrowserClient<Database>(supabaseUrl, supabaseKey);
+  return client;
 }
 

@@ -12,7 +12,7 @@ export default async function NewProjectPage() {
         <h1 className="text-xl font-semibold tracking-tight">
           New project
         </h1>
-        <p className="mt-1 text-xs text-[color:var(--text-secondary)]">
+        <p className="mt-1 text-xs text-text-secondary">
           Define the story, preview the page, and publish when it feels right.
         </p>
       </header>

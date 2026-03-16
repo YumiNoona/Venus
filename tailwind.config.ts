@@ -11,13 +11,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "var(--bg)",
-        "bg-soft": "var(--bg-soft)",
-        text: "var(--text)",
-        "text-secondary": "var(--text-secondary)",
-        border: "var(--border)",
-        primary: "var(--primary)",
-        accent: "var(--accent)",
+        bg: "hsl(var(--bg) / <alpha-value>)",
+        "bg-soft": "hsl(var(--bg-soft) / <alpha-value>)",
+        text: "hsl(var(--text) / <alpha-value>)",
+        "text-secondary": "hsl(var(--text-secondary) / <alpha-value>)",
+        border: "hsl(var(--border) / <alpha-value>)",
+        primary: "hsl(var(--primary) / <alpha-value>)",
+        accent: "hsl(var(--accent) / <alpha-value>)",
       },
       borderRadius: {
         lg: "12px",

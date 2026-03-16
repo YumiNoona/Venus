@@ -16,7 +16,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="h-9 w-9 rounded-md border border-neutral-800 bg-neutral-900/50 animate-pulse" />
+      <div className="h-9 w-9 rounded-md border border-border bg-bg-soft/50 animate-pulse" />
     );
   }
 
@@ -25,9 +25,9 @@ export function ThemeToggle() {
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       className={cn(
         "flex h-9 w-9 items-center justify-center rounded-md border transition-impeccable",
-        "border-neutral-800 bg-neutral-900/50 text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]",
-        "dark:border-neutral-800 dark:bg-neutral-900/50",
-        "light:border-neutral-200 light:bg-white light:text-neutral-500"
+        "border-border bg-bg-soft/50 text-text-secondary hover:text-text",
+        "dark:border-border dark:bg-bg-soft/50",
+        "light:border-neutral-200 light:bg-white light:text-text-secondary"
       )}
       aria-label="Toggle theme"
     >

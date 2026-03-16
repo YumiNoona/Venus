@@ -69,6 +69,12 @@ export type Database = {
           remember_visitor: boolean | null
           short_description: string | null
           slug: string
+          theme: string
+          custom_domain: string | null
+          location: string | null
+          architect: string | null
+          area: string | null
+          year: string | null
           stream_url: string | null
           thumbnail_dark: string | null
           thumbnail_light: string | null
@@ -89,6 +95,12 @@ export type Database = {
           remember_visitor?: boolean | null
           short_description?: string | null
           slug: string
+          theme?: string
+          custom_domain?: string | null
+          location?: string | null
+          architect?: string | null
+          area?: string | null
+          year?: string | null
           stream_url?: string | null
           thumbnail_dark?: string | null
           thumbnail_light?: string | null
@@ -109,6 +121,12 @@ export type Database = {
           remember_visitor?: boolean | null
           short_description?: string | null
           slug?: string
+          theme?: string
+          custom_domain?: string | null
+          location?: string | null
+          architect?: string | null
+          area?: string | null
+          year?: string | null
           stream_url?: string | null
           thumbnail_dark?: string | null
           thumbnail_light?: string | null

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { redis, CACHE_KEYS } from "./lib/redis";
 
 export async function proxy(req: NextRequest) {
   const url = req.nextUrl;
@@ -19,8 +20,8 @@ export async function proxy(req: NextRequest) {
 
   // 2. High-Speed Cookie Gating (The "5ms" fast path)
   if (isStudioRoute && !isPublicRoute) {
-    const sessionCookie = req.cookies.get("sb-access-token") || req.cookies.get("sb-refresh-token");
-    if (!sessionCookie) {
+    const hasSession = req.cookies.getAll().some(c => c.name.startsWith("sb-"));
+    if (!hasSession) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     
@@ -77,14 +78,50 @@ export async function proxy(req: NextRequest) {
         { cookies: { getAll: () => req.cookies.getAll() } }
      );
 
-     // Check for slug or redirect
-     const { data: project } = await supabaseAnon
-       .from('projects')
-       .select('id')
-       .eq('slug', currentHost)
-       .single();
+     // Check for slug (Subdomain)
+     let targetSlug = currentHost;
+     
+     if (!isMainDomain && currentHost !== hostname) {
+       // Only do custom domain lookups if it's NOT a subdomain
+       // (e.g., if hostname is "project.venusapp.in", currentHost is "project")
+       // If hostname is "custom.com", currentHost will be "custom.com"
+       
+       if (currentHost === hostname) {
+         // It's a Custom Domain
+         // 1. Try Redis Cache first
+         const cachedSlug = await redis.get<string>(CACHE_KEYS.CUSTOM_DOMAIN(hostname));
+         
+         if (cachedSlug) {
+           targetSlug = cachedSlug;
+         } else {
+           // 2. Fallback to Supabase
+           const { data: project } = await supabaseAnon
+             .from('projects')
+             .select('slug')
+             .eq('custom_domain', hostname)
+             .single();
+             
+           if (project?.slug) {
+             targetSlug = project.slug;
+             // Cache the result asynchronously
+             redis.set(CACHE_KEYS.CUSTOM_DOMAIN(hostname), project.slug, { ex: 3600 }).catch(console.error);
+           } else {
+             targetSlug = null as any; // Not found
+           }
+         }
+       } else {
+         // It's a Subdomain
+         const { data: project } = await supabaseAnon
+           .from('projects')
+           .select('id')
+           .eq('slug', currentHost)
+           .single();
+         
+         if (!project) targetSlug = null as any;
+       }
+     }
 
-     if (!project) {
+     if (!targetSlug) {
        const { data: redirectData } = await (supabaseAnon as any)
          .from('slug_redirects')
          .select('new_slug')
@@ -96,11 +133,13 @@ export async function proxy(req: NextRequest) {
            status: 301
          });
        }
+       
+       // If totally not found, just let it pass to 404
      }
 
      // Rewrite to /p/[slug]
-     if (!pathname.startsWith('/p/')) {
-       return NextResponse.rewrite(new URL(`/p/${currentHost}${pathname === '/' ? '' : pathname}`, req.url));
+     if (targetSlug && !pathname.startsWith('/p/')) {
+       return NextResponse.rewrite(new URL(`/p/${targetSlug}${pathname === '/' ? '' : pathname}`, req.url));
      }
   }
 

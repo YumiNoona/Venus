@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  /* --- Premium Theme Tokens (Light) --- */
-  --bg: #ffffff;
-  --bg-soft: #f7f7f7;
-  --text: #0f0f0f;
-  --text-secondary: #555555;
-  --border: #e5e5e5;
-  --primary: #c6a86b;
-  --accent: #c6a86b;
+  /* --- Premium Theme Tokens (Light/Default) --- */
+  --bg: 0 0% 100%;
+  --bg-soft: 0 0% 98%;
+  --text: 0 0% 4%;
+  --text-secondary: 0 0% 40%;
+  --border: 0 0% 92%;
+  --primary: 0 0% 0%;
+  --accent: 40 45% 60%;
   
   /* --- Motion Tokens --- */
   --motion-fast: 120ms;
@@ -20,46 +20,76 @@
 
 .dark {
   /* --- Premium Theme Tokens (Dark) --- */
-  --bg: #0a0a0a;
-  --bg-soft: #111111;
-  --text: #ededed;
-  --text-secondary: #9c9c9c;
-  --border: #262626;
-  --primary: #c6a86b;
-  --accent: #c6a86b;
+  --bg: 0 0% 0%;
+  --bg-soft: 0 0% 4%;
+  --text: 0 0% 93%;
+  --text-secondary: 0 0% 53%;
+  --border: 0 0% 13%;
+  --primary: 0 0% 100%;
+  --accent: 40 45% 60%;
 }
 
-/* --- Project Presentation Themes --- */
+/* --- Project Presentation Themes (These FORCE override both Light & Dark modes when applied directly) --- */
 .theme-minimal {
-  --bg: #ffffff;
-  --bg-soft: #f9f9f9;
-  --text: #111111;
-  --border: #eeeeee;
-  --primary: #111111;
+  --bg: 0 0% 100%;
+  --bg-soft: 0 0% 98%;
+  --text: 0 0% 7%;
+  --text-secondary: 0 0% 40%;
+  --border: 0 0% 92%;
+  --primary: 0 0% 0%;
+  --accent: 0 0% 7%;
+}
+
+.dark .theme-minimal, .theme-minimal.dark {
+  --bg: 0 0% 0%;
+  --bg-soft: 0 0% 4%;
+  --text: 0 0% 93%;
+  --text-secondary: 0 0% 53%;
+  --border: 0 0% 13%;
+  --primary: 0 0% 100%;
+  --accent: 0 0% 100%;
 }
 
 .theme-glass {
-  --bg: #050505;
-  --bg-soft: rgba(255, 255, 255, 0.03);
-  --text: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --primary: #ffffff;
+  --bg: 0 0% 0%;
+  --bg-soft: 0 0% 10%;
+  --text: 0 0% 100%;
+  --text-secondary: 0 0% 60%;
+  --border: 0 0% 15%;
+  --primary: 0 0% 100%;
+  --accent: 0 0% 100%;
+}
+
+/* Glass mode ignores user's system preference because it's a fixed dark/glass aesthetic */
+.dark .theme-glass, .light .theme-glass {
+  --bg: 0 0% 0%;
+  --bg-soft: 0 0% 10%;
+  --text: 0 0% 100%;
+  --text-secondary: 0 0% 60%;
+  --border: 0 0% 15%;
+  --primary: 0 0% 100%;
+  --accent: 0 0% 100%;
 }
 
 .theme-architect {
-  --bg: #0a0a0a;
-  --bg-soft: #111111;
-  --text: #ededed;
-  --border: #262626;
-  --primary: #C9A46C;
+  --bg: 0 0% 2%;
+  --bg-soft: 0 0% 4%;
+  --text: 0 0% 96%;
+  --text-secondary: 0 0% 53%;
+  --border: 0 0% 15%;
+  --primary: 40 45% 60%;
+  --accent: 40 45% 60%;
 }
 
-.dark .theme-minimal {
-  --bg: #0a0a0a;
-  --bg-soft: #111111;
-  --text: #ededed;
-  --border: #262626;
-  --primary: #ffffff;
+/* Architect mode is always a dark/gold aesthetic */
+.dark .theme-architect, .light .theme-architect {
+  --bg: 0 0% 2%;
+  --bg-soft: 0 0% 4%;
+  --text: 0 0% 96%;
+  --text-secondary: 0 0% 53%;
+  --border: 0 0% 15%;
+  --primary: 40 45% 60%;
+  --accent: 40 45% 60%;
 }
 
 @layer base {
