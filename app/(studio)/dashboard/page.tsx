@@ -6,6 +6,7 @@ import { Plus, Users, Calendar, ArrowRight, BarChart3, Loader2 } from "lucide-re
 import { DashboardStatsWrapper } from "./stats-wrapper";
 import { RecentLeadsWrapper } from "./leads-wrapper";
 import { ActivityTrendWrapper } from "./trend-wrapper";
+import { TourInitializer } from "./tour-initializer";
 
 export const dynamic = "force-dynamic";
 
@@ -14,18 +15,19 @@ export default async function DashboardPage() {
 
   return (
     <div className="page-container space-y-12 pb-20">
+      <TourInitializer />
       {/* Header - Renders Instantly */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black tracking-tight text-text">
-            Studio Dashboard
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Dashboard
           </h1>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-muted-foreground">
             Performance overview for your architectural visualizations.
           </p>
         </div>
         <Link href="/projects/new">
-          <Button variant="primary" size="md" className="gap-2 shadow-lg shadow-accent/10">
+          <Button variant="primary" size="sm" className="gap-2 tour-new-project">
             <Plus className="h-4 w-4" />
             New Project
           </Button>
@@ -33,10 +35,9 @@ export default async function DashboardPage() {
       </header>
 
       {/* Metrics section - Progressive Load */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-           <BarChart3 className="h-4 w-4 text-accent" />
-           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary">
+      <section className="space-y-4 tour-metrics">
+        <div className="flex items-center gap-2 px-1">
+           <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
              Growth Metrics
            </h2>
         </div>
@@ -45,16 +46,15 @@ export default async function DashboardPage() {
         </Suspense>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-1">
         {/* Recent Leads - Progressive Load */}
-        <section className="lg:col-span-2 space-y-4">
+        <section className="lg:col-span-2 space-y-4 tour-recent-leads">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-text-secondary">
-              <Users className="h-4 w-4 text-accent" />
-              <h2 className="text-xs font-bold uppercase tracking-[0.2em]">Latest Inquiries</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Latest Inquiries</h2>
             </div>
             <Link href="/leads">
-               <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold tracking-widest gap-1 hover:text-accent">
+               <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold tracking-widest gap-1">
                  View All <ArrowRight className="h-3 w-3" />
                </Button>
             </Link>
@@ -67,9 +67,8 @@ export default async function DashboardPage() {
 
         {/* Visitor Activity Trend - Progressive Load */}
         <section className="space-y-4">
-          <div className="flex items-center gap-2 text-text-secondary">
-            <ArrowRight className="h-4 w-4 text-accent" />
-            <h2 className="text-xs font-bold uppercase tracking-[0.2em]">Activity Trend</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Activity Trend</h2>
           </div>
           <Suspense fallback={<CardSkeleton />}>
             <ActivityTrendWrapper />

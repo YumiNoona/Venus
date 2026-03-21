@@ -12,6 +12,7 @@ import {
 } from "@/components/ui";
 import { MoreHorizontal, Power, Trash2, Edit, Copy, Check } from "lucide-react";
 import { toggleProjectStatus, deleteProject } from "./actions";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 interface ProjectTableActionsProps {
@@ -47,7 +48,7 @@ export function ProjectTableActions({ projectId, published, slug }: ProjectTable
 
   return (
     <>
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-end gap-1">
         <Button 
            variant="ghost" 
            size="sm" 
@@ -55,19 +56,22 @@ export function ProjectTableActions({ projectId, published, slug }: ProjectTable
            onClick={handleCopy}
            title="Copy Link"
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5 opacity-60" />}
         </Button>
 
         <Link href={`/projects/edit/${projectId}`}>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Edit">
-            <Edit className="h-3.5 w-3.5" />
+            <Edit className="h-3.5 w-3.5 opacity-60" />
           </Button>
         </Link>
 
         <Button 
            variant="ghost" 
            size="sm" 
-           className={`h-8 w-8 p-0 ${published ? 'text-emerald-500' : 'text-text-secondary'}`}
+           className={cn(
+             "h-8 w-8 p-0",
+             published ? "text-emerald-500" : "text-muted-foreground opacity-60"
+           )}
            onClick={handleToggle}
            disabled={isLoading}
            title={published ? "Unpublish" : "Publish"}
@@ -78,7 +82,7 @@ export function ProjectTableActions({ projectId, published, slug }: ProjectTable
         <Button 
            variant="ghost" 
            size="sm" 
-           className="h-8 w-8 p-0 text-red-500 hover:text-red-500 hover:bg-red-500/10"
+           className="h-8 w-8 p-0 text-red-500/60 hover:text-red-500 hover:bg-red-500/10"
            onClick={() => setIsDeleting(true)}
            disabled={isLoading}
            title="Delete"

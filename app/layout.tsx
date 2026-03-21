@@ -32,7 +32,13 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark">
           <QueryProvider>
-            {children}
+            <div className="relative min-h-screen">
+              {/* Global Dotted Grid */}
+              <div className="fixed inset-0 grid-dots opacity-[0.35] pointer-events-none z-0" />
+              <div className="relative z-10">
+                {children}
+              </div>
+            </div>
           </QueryProvider>
         </ThemeProvider>
       </body>

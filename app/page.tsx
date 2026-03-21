@@ -1,132 +1,53 @@
-import Link from "next/link";
+"use client";
+
+import dynamic from "next/dynamic";
 import Navbar from "@/components/navbar";
-import { Button } from "@/components/ui";
-import { ArrowRight, Box, Shield, Zap, Layout } from "lucide-react";
+import HeroScene from "@/components/landing/hero-scene";
+import ProblemSection from "@/components/landing/problem-section";
+
+// Dynamically import heavy or secondary sections for better performance
+const ProductWalkthrough = dynamic(() => import("@/components/landing/product-walkthrough"), { ssr: true });
+const Capabilities = dynamic(() => import("@/components/landing/capabilities"), { ssr: true });
+const InterfaceShowcase = dynamic(() => import("@/components/landing/interface-showcase"), { ssr: true });
+const DataInsights = dynamic(() => import("@/components/landing/data-insights"), { ssr: true });
+const PricingSection = dynamic(() => import("@/components/landing/pricing-section"), { ssr: true });
+const FAQSection = dynamic(() => import("@/components/landing/faq-section"), { ssr: true });
+const FinalCTA = dynamic(() => import("@/components/landing/final-cta"), { ssr: true });
+const Footer = dynamic(() => import("@/components/landing/footer"), { ssr: true });
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
+    <div className="flex min-h-screen flex-col bg-bg-primary text-text-primary selection:bg-gold selection:text-bg-primary">
       <Navbar />
 
       <main className="flex-1">
-        {/* Architectural Hero */}
-        <section className="page-container flex flex-col items-center text-center space-y-8 py-24 md:py-32 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-soft px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-accent">
-            <span className="h-1 w-1 rounded-full bg-accent" />
-            V0.1 Alpha
-          </div>
-          
-          <h1 className="max-w-4xl text-5xl md:text-6xl font-semibold tracking-tight leading-[1.1] text-text">
-            Present Interactive <br />
-            <span className="text-accent">Architectural Experiences.</span>
-          </h1>
-          
-          <p className="max-w-2xl text-lg text-text-secondary leading-relaxed">
-            The developer-style dashboard for architecture studios. Manage projects, capture leads, and share stunning interactive links with clients—all from one precise interface.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-            <Link href="/signup" prefetch>
-              <Button size="lg" className="h-12 px-8">
-                Build your studio
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/login" prefetch>
-              <Button variant="secondary" size="lg" className="h-12 px-8">
-                Explore Demo
-              </Button>
-            </Link>
-          </div>
+        {/* 01 - Hero */}
+        <HeroScene />
 
-          {/* Minimal visual representation */}
-          <div className="mt-16 w-full max-w-5xl rounded-2xl border border-border bg-bg-soft/50 p-4 shadow-2xl overflow-hidden aspect-[16/9] flex items-center justify-center relative">
-             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 to-transparent z-10" />
-             <div className="grid grid-cols-12 gap-4 w-full h-full opacity-40">
-                <div className="col-span-3 border-r border-border flex flex-col p-4 gap-4">
-                  {[1,2,3,4].map(i => <div key={i} className="h-2 w-full bg-neutral-800 rounded" />)}
-                </div>
-                <div className="col-span-9 p-8 space-y-8">
-                  <div className="h-8 w-1/3 bg-neutral-800 rounded" />
-                  <div className="grid grid-cols-3 gap-6">
-                    {[1,2,3].map(i => <div key={i} className="h-32 bg-neutral-800 rounded-xl" />)}
-                  </div>
-                </div>
-             </div>
-             <div className="z-20 text-xs font-mono uppercase tracking-[0.2em] text-text-secondary">
-               Interactive Studio Dashboard Interface
-             </div>
-          </div>
-        </section>
+        {/* 03 - Problem Section */}
+        <ProblemSection />
 
-        {/* Precise Feature Grid */}
-        <section className="bg-bg/30 border-y border-border py-24">
-          <div className="page-container grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="space-y-4">
-              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-bg-soft border border-border text-accent">
-                <Box className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-semibold text-text">Stream Integration</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Connect your high-performance pixel streaming endpoints. We handle the presentation and SEO wrapping.
-              </p>
-            </div>
+        {/* 06 - Capabilities */}
+        <Capabilities />
 
-            <div className="space-y-4">
-              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-bg-soft border border-border text-accent">
-                <Shield className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-semibold text-text">Secure Lead Capture</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Integrated auth-guarded modals. Capture high-intent leads before granting access to your experiences.
-              </p>
-            </div>
+        {/* 07 - Interface Showcase */}
+        <InterfaceShowcase />
 
-            <div className="space-y-4">
-              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-bg-soft border border-border text-accent">
-                <Zap className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-semibold text-text">Instant Deployment</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Publish projects with a single thoughtful link. Optimized for social sharing and professional client delivery.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* 08 - Data Insights */}
+        <DataInsights />
 
-        {/* Bottom CTA */}
-        <section className="page-container py-24 text-center space-y-6">
-           <h2 className="text-3xl font-semibold tracking-tight text-text">
-             Ready to showcase your projects?
-           </h2>
-           <p className="text-sm text-text-secondary max-w-sm mx-auto">
-             Join architecture studios using Venus to bridge the gap between visualization and client acquisition.
-           </p>
-           <div className="pt-4">
-             <Link href="/signup" prefetch>
-               <Button variant="primary" size="lg">Create Studio Account</Button>
-             </Link>
-           </div>
-        </section>
+        {/* 09 - Pricing */}
+        <PricingSection />
+
+        {/* 10 - FAQ */}
+        <FAQSection />
+
+        {/* 11 - Final CTA */}
+        <FinalCTA />
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="border-t border-border py-12 bg-bg">
-        <div className="page-container flex flex-col md:flex-row justify-between items-center gap-8">
-           <div className="flex items-center gap-2">
-             <div className="flex h-6 w-6 items-center justify-center rounded bg-neutral-800 text-[8px] font-bold text-text-secondary">V</div>
-             <span className="text-xs font-semibold tracking-tight text-text-secondary">Venus Architecture Platform</span>
-           </div>
-           <div className="flex gap-8 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-             <Link href="#" className="hover:text-text-secondary transition-colors">Documentation</Link>
-             <Link href="#" className="hover:text-text-secondary transition-colors">Privacy</Link>
-             <Link href="#" className="hover:text-text-secondary transition-colors">Status</Link>
-           </div>
-           <div className="text-[10px] text-neutral-700">
-             © 2024 Venus Labs Inc.
-           </div>
-        </div>
-      </footer>
+      {/* 12 - Footer */}
+      <Footer />
     </div>
   );
 }

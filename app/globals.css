@@ -3,30 +3,76 @@
 @tailwind utilities;
 
 :root {
-  /* --- Premium Theme Tokens (Light/Default) --- */
+  /* --- Vercel/Obsidian Theme Tokens --- */
   --bg: 0 0% 100%;
   --bg-soft: 0 0% 98%;
-  --text: 0 0% 4%;
-  --text-secondary: 0 0% 40%;
-  --border: 0 0% 92%;
-  --primary: 0 0% 0%;
-  --accent: 40 45% 60%;
-  
-  /* --- Motion Tokens --- */
-  --motion-fast: 120ms;
-  --motion-normal: 180ms;
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f9f9;
+  --card-bg: #ffffff;
+  --border: 0 0% 90%;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+
+  --text: 0 0% 7%;
+  --text-secondary: 0 0% 45%;
+  --text-primary: #111111;
+
+  --accent-gold: 42 58% 60%; 
+  --accent-violet: 258 92% 60%;
+
+  /* shadcn compatible tokens (using HSL) */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 258 92% 60%;
+  --accent-foreground: 0 0% 9%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 0 0% 3.9%;
 }
 
 .dark {
-  /* --- Premium Theme Tokens (Dark) --- */
   --bg: 0 0% 0%;
   --bg-soft: 0 0% 4%;
-  --text: 0 0% 93%;
-  --text-secondary: 0 0% 53%;
-  --border: 0 0% 13%;
-  --primary: 0 0% 100%;
-  --accent: 40 45% 60%;
+  --bg-primary: #000000;
+  --bg-secondary: #080808;
+  --card-bg: #0c0c0c;
+  --border: 0 0% 12%;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --text: 0 0% 98%;
+  --text-secondary: 0 0% 55%;
+  --text-primary: #ffffff;
+
+  --background: 0 0% 0%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 4%;
+  --card-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 258 90% 66%;
+  --accent-foreground: 0 0% 98%;
+  --border: 0 0% 12%;
+  --input: 0 0% 12%;
+  --ring: 0 0% 83.1%;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
 }
 
 /* --- Project Presentation Themes (These FORCE override both Light & Dark modes when applied directly) --- */
@@ -132,6 +178,74 @@
 
   .premium-card {
     @apply bg-[var(--bg-soft)] border border-[var(--border)] rounded-xl p-6 transition-all duration-200 hover:border-neutral-500 hover:-translate-y-1;
+  }
+
+  .glass {
+    background-color: hsla(var(--glass-bg));
+    backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid hsla(var(--glass-border));
+  }
+
+  .glass-interactive {
+    @apply glass transition-all duration-200;
+  }
+
+  .glass-interactive:hover {
+    background-color: hsla(var(--glass-bg), 0.6);
+    border-color: hsla(var(--glass-border), 0.2);
+    transform: translateY(-1px);
+  }
+
+  .blueprint-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .grid-dots {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .glass-ui {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+  }
+
+  .glass-card {
+    @apply bg-white/[0.01] backdrop-blur-md border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500;
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 40px rgba(212, 167, 96, 0.1);
+  }
+
+  .glow-violet {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+  }
+
+  .btn-premium {
+    @apply rounded-full font-black uppercase tracking-[0.2em] text-[11px] transition-all duration-300;
+  }
+
+  .btn-primary-obs {
+    @apply btn-premium bg-white text-black hover:bg-white/90 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.15)];
+  }
+
+  .btn-secondary-obs {
+    @apply btn-premium bg-transparent text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.02] backdrop-blur-sm active:scale-95;
+  }
+
+  .text-gold {
+    color: #d4a760;
+  }
+
+  .bg-gold {
+    background-color: #d4a760;
+  }
+
+  .border-gold {
+    border-color: #d4a760;
   }
 }
 
