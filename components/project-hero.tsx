@@ -4,7 +4,6 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "./ui";
 import { ArrowDown, Play } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ThemeAwareImage } from "./theme-aware-image";
 
 interface ProjectHeroProps {

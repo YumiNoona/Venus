@@ -2,16 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Card, Button, Badge, Progress, Label, Separator } from "@/components/ui";
-import { CreditCard, Zap, Crown, Check, AlertCircle, Building2 } from "lucide-react";
-import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
+import { Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updateSubscription, getSubscription } from "@/lib/actions/billing";
-import { PLAN_FEATURES, type PlanType } from "@/lib/config/plans";
+import { type PlanType } from "@/lib/config/plans";
 
 export default function BillingPage() {
   const [subscription, setSubscription] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createBrowserSupabaseClient();
 
   useEffect(() => {
     async function loadData() {

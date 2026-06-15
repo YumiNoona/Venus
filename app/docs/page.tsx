@@ -8,13 +8,9 @@ import {
   BarChart3, 
   Settings2, 
   Lock,
-  Globe,
   Camera,
   Layout,
   FileText,
-  Image as ImageIcon,
-  Workflow,
-  Cpu,
   Palette,
   Activity,
   Zap,
@@ -22,7 +18,6 @@ import {
   User,
   ShieldCheck,
   Smartphone,
-  Info,
   Eye,
   Share2,
   ListTodo
@@ -61,6 +56,19 @@ const SECTIONS = [
           <StatBox label="Visitors" value="Total Visits" />
           <StatBox label="Leads" value="Collected Data" />
           <StatBox label="Conversion" value="Visit → Lead %" />
+        </div>
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl mt-8">
+           <img 
+             src="/images/dashboard-shot.png" 
+             alt="Live Dashboard" 
+             className="w-full h-auto opacity-70 hover:opacity-100 transition-opacity duration-700"
+           />
+           <div className="p-4 bg-black/60 backdrop-blur-md flex items-center justify-between">
+              <p className="text-[10px] font-black text-gold uppercase tracking-[0.3em] flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+                 Live Platform: Dashboard
+              </p>
+           </div>
         </div>
       </div>
     )
@@ -206,9 +214,24 @@ const SECTIONS = [
     title: "Leads Management",
     icon: <Activity className="w-5 h-5 text-gold" />,
     content: (
-      <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] grid grid-cols-1 md:grid-cols-2 gap-10">
-        <SimpleList title="Core Features" items={["Search by Name/Email", "Filter by Project/Date", "Export to CSV or PDF"]} />
-        <SimpleList title="Data Captured" items={["Verified Contact Data", "Project Interest Tracking", "Session Metadata"]} />
+      <div className="space-y-8">
+        <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] grid grid-cols-1 md:grid-cols-2 gap-10">
+          <SimpleList title="Core Features" items={["Search by Name/Email", "Filter by Project/Date", "Export to CSV or PDF"]} />
+          <SimpleList title="Data Captured" items={["Verified Contact Data", "Project Interest Tracking", "Session Metadata"]} />
+        </div>
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+           <img 
+              src="/images/leads-mockup.png" 
+              alt="Leads Management" 
+             className="w-full h-auto opacity-80 hover:opacity-100 transition-opacity duration-500"
+           />
+           <div className="p-4 bg-black/60 backdrop-blur-md flex items-center justify-between">
+              <p className="text-[10px] font-black text-gold uppercase tracking-[0.3em] flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+                 Live Platform: Inquiry Ledger
+              </p>
+           </div>
+        </div>
       </div>
     )
   },
@@ -220,7 +243,20 @@ const SECTIONS = [
     content: (
       <div className="space-y-6">
         <p className="text-lg text-text-secondary">Monitor your entire portfolio. Each row shows **Visitor Counts**, **Live URL**, and **Creation Date**.</p>
-        <div className="flex flex-wrap gap-4">
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl border-t-0 rounded-t-none">
+           <img 
+             src="/images/projects-shot.png" 
+             alt="Projects List" 
+             className="w-full h-auto opacity-80 hover:opacity-100 transition-opacity duration-500 hover:grayscale-0 grayscale-[20%]"
+           />
+           <div className="p-4 bg-black/60 backdrop-blur-md flex items-center justify-between border-t border-white/5">
+              <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                 Live Platform: Projects List
+              </p>
+           </div>
+        </div>
+        <div className="flex flex-wrap gap-4 pt-4">
           {["Edit", "Copy Link", "Toggle Status", "Delete"].map(a => (
             <span key={a} className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-widest text-white/60">{a}</span>
           ))}
@@ -328,6 +364,55 @@ export default function DocsPage() {
                     The complete operational guide for architectural studios. Documentation for every component of the Venus ecosystem.
                 </p>
             </header>
+
+            {/* Visual Showcase Section - Requested by user */}
+            <section className="space-y-16 py-20">
+              <h3 className="text-4xl md:text-6xl font-black italic text-white uppercase tracking-tighter text-right">
+                Built for teams managing <br/> 
+                <span className="text-gold">interactive presentations</span>
+              </h3>
+              
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                {/* Dashboard Card */}
+                <div className="group relative aspect-video rounded-[2rem] overflow-hidden border border-white/10 bg-black/40 shadow-2xl transition-all hover:border-gold/30">
+                  <img 
+                    src="/images/dashboard-shot.png" 
+                    alt="Dashboard" 
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-1000"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-gradient-to-t from-black via-black/80 to-transparent">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+                        <p className="text-xs font-black text-gold uppercase tracking-[0.4em]">Live Platform: Dashboard</p>
+                      </div>
+                      <a 
+                        href="/images/dashboard-tour.webp" 
+                        target="_blank"
+                        className="px-3 py-1 bg-white/10 hover:bg-gold/20 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-white transition-all backdrop-blur-sm"
+                      >
+                        Watch Walkthrough
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Projects Card */}
+                <div className="group relative aspect-video rounded-[2rem] overflow-hidden border border-white/10 bg-black/40 shadow-2xl transition-all hover:border-gold/30">
+                  <img 
+                    src="/images/projects-shot.png" 
+                    alt="Projects" 
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-1000"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 p-8 pt-20 bg-gradient-to-t from-black via-black/80 to-transparent">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/40" />
+                      <p className="text-xs font-black text-white/40 uppercase tracking-[0.4em]">Live Platform: Projects List</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {SECTIONS.map(section => (
               <section key={section.id} id={section.id} className="scroll-mt-40 space-y-12">

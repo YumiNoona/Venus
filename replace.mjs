@@ -19,24 +19,24 @@ function walk(dir, callback) {
 }
 
 const replacements = [
-  { from: /bg-\\[color:var\\(--bg\\)\\]/g, to: 'bg-bg' },
-  { from: /bg-\\[color:var\\(--bg-soft\\)\\]/g, to: 'bg-bg-soft' },
-  { from: /bg-\\[color:var\\(--surface\\)\\]/g, to: 'bg-bg-soft' },
-  { from: /bg-\\[color:var\\(--surface-hover\\)\\]/g, to: 'bg-bg-soft' },
-  { from: /text-\\[color:var\\(--text\\)\\]/g, to: 'text-text' },
-  { from: /text-\\[color:var\\(--text-primary\\)\\]/g, to: 'text-text' },
-  { from: /text-\\[color:var\\(--text-secondary\\)\\]/g, to: 'text-text-secondary' },
-  { from: /border-\\[color:var\\(--border\\)\\]/g, to: 'border-border' },
-  { from: /bg-\\[color:var\\(--primary\\)\\]/g, to: 'bg-primary' },
-  { from: /text-\\[color:var\\(--primary\\)\\]/g, to: 'text-primary' },
-  { from: /border-\\[color:var\\(--primary\\)\\]/g, to: 'border-primary' },
-  { from: /bg-\\[color:var\\(--accent\\)\\]/g, to: 'bg-accent' },
-  { from: /text-\\[color:var\\(--accent\\)\\]/g, to: 'text-accent' },
-  { from: /border-\\[color:var\\(--accent\\)\\]/g, to: 'border-accent' },
-  { from: /shadow-\\[color:var\\(--accent\\)\\]/g, to: 'shadow-accent' },
-  { from: /shadow-\\[color:var\\(--primary\\)\\]/g, to: 'shadow-primary' },
-  { from: /bg-\\[color:var\\(--danger-soft\\)\\]/g, to: 'bg-red-500/10' },
-  { from: /fill-\\[color:var\\(--accent\\)\\]/g, to: 'fill-accent' }
+  { from: /bg-\[color:var\(--bg\)\]/g, to: 'bg-bg' },
+  { from: /bg-\[color:var\(--bg-soft\)\]/g, to: 'bg-bg-soft' },
+  { from: /bg-\[color:var\(--surface\)\]/g, to: 'bg-bg-soft' },
+  { from: /bg-\[color:var\(--surface-hover\)\]/g, to: 'bg-bg-soft' },
+  { from: /text-\[color:var\(--text\)\]/g, to: 'text-text' },
+  { from: /text-\[color:var\(--text-primary\)\]/g, to: 'text-text' },
+  { from: /text-\[color:var\(--text-secondary\)\]/g, to: 'text-text-secondary' },
+  { from: /border-\[color:var\(--border\)\]/g, to: 'border-border' },
+  { from: /bg-\[color:var\(--primary\)\]/g, to: 'bg-primary' },
+  { from: /text-\[color:var\(--primary\)\]/g, to: 'text-primary' },
+  { from: /border-\[color:var\(--primary\)\]/g, to: 'border-primary' },
+  { from: /bg-\[color:var\(--accent\)\]/g, to: 'bg-accent' },
+  { from: /text-\[color:var\(--accent\)\]/g, to: 'text-accent' },
+  { from: /border-\[color:var\(--accent\)\]/g, to: 'border-accent' },
+  { from: /shadow-\[color:var\(--accent\)\]/g, to: 'shadow-accent' },
+  { from: /shadow-\[color:var\(--primary\)\]/g, to: 'shadow-primary' },
+  { from: /bg-\[color:var\(--danger-soft\)\]/g, to: 'bg-red-500/10' },
+  { from: /fill-\[color:var\(--accent\)\]/g, to: 'fill-accent' }
 ];
 
 let changedFiles = 0;

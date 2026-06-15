@@ -1,9 +1,8 @@
 import { requireUser } from "@/lib/auth";
 export const dynamic = "force-dynamic";
-import { Button, Badge, Card, Separator } from "@/components/ui";
+import { Button, Badge, Card } from "@/components/ui";
 import Link from "next/link";
-import { Plus, MoreHorizontal, ExternalLink, Trash2, Power, Copy, Calendar, Globe } from "lucide-react";
-import type { Database } from "@/types/database";
+import { Plus, ExternalLink, Globe } from "lucide-react";
 import { ProjectTableActions } from "./table-actions";
 import { cn } from "@/lib/utils";
 
@@ -28,10 +27,10 @@ export default async function ProjectsPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="text-4xl font-black tracking-tighter text-foreground italic uppercase">
             Projects
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground font-medium">
             Manage your architectural visualizations and public links.
           </p>
         </div>
@@ -49,13 +48,13 @@ export default async function ProjectsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Project</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Slug / Link</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center">Visitors</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Created</th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-right">Actions</th>
+                <tr className="border-b border-white/5 bg-white/[0.02]">
+                  <th className="px-8 py-6 text-xs font-black uppercase tracking-[0.3em] text-white/20">Project</th>
+                  <th className="px-8 py-6 text-xs font-black uppercase tracking-[0.3em] text-white/20">Slug / Link</th>
+                  <th className="px-8 py-6 text-xs font-black uppercase tracking-[0.3em] text-white/20 text-center">Visitors</th>
+                  <th className="px-8 py-6 text-xs font-black uppercase tracking-[0.3em] text-white/20">Status</th>
+                  <th className="px-8 py-6 text-xs font-black uppercase tracking-[0.3em] text-white/20">Created</th>
+                  <th className="px-8 py-6 text-xs font-black uppercase tracking-[0.3em] text-white/20 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

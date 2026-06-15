@@ -73,6 +73,7 @@ export default function LoginPage() {
         }
       }
 
+      setLoading(false);
       router.push("/dashboard");
       router.refresh();
     } catch (err) {

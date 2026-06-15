@@ -2,15 +2,17 @@
 
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { headers } from "next/headers"
+import { hashIP } from "@/lib/utils/privacy"
+import { redis, CACHE_KEYS } from "@/lib/redis"
 
 /**
  * Submits a new lead for a project with IP capture and Visitor linking.
  */
 export async function submitLead(formData: FormData) {
-  const projectId = formData.get("projectId") as string
-  const name = formData.get("name") as string
-  const email = formData.get("email") as string
-  const phone = formData.get("phone") as string
+  const projectId = formData.get("projectId")?.toString() ?? ""
+  const name = formData.get("name")?.toString() ?? ""
+  const email = formData.get("email")?.toString() ?? ""
+  const phone = formData.get("phone")?.toString() ?? ""
 
   // 1. Strict Validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,7 +24,6 @@ export async function submitLead(formData: FormData) {
   const headersList = await headers();
   const rawIp = headersList.get("x-forwarded-for") || "unknown";
 
-  const { hashIP } = await import("@/lib/utils/privacy");
   const ipHash = await hashIP(rawIp);
 
   // 1.5 Rate Limiting: 1 submission per IP every 30 seconds
@@ -43,7 +44,7 @@ export async function submitLead(formData: FormData) {
   }
 
   // 2. Create Lead
-  const { data: lead, error: leadError } = await (supabase as any)
+  const { data: lead, error: leadError } = await supabase
     .from("leads")
     .insert({
       project_id: projectId,
@@ -86,9 +87,8 @@ export async function submitLead(formData: FormData) {
     .single();
 
   if (project?.user_id) {
-    const { redis, CACHE_KEYS } = await import("@/lib/redis");
     const cacheKey = CACHE_KEYS.PROJECT_STATS(project.user_id);
-    void redis.del(cacheKey).catch(e => console.error("Redis del failed:", e));
+    await redis.del(cacheKey).catch(e => console.error("Redis del failed:", e));
   }
 
   return { success: true }

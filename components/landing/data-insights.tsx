@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
 export default function DataInsights() {

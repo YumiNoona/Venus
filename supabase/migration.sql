@@ -214,5 +214,3 @@ create policy "slug_redirects_select_public" on public.slug_redirects
 -- ─── Indices for Funnel ────────────────────────────────
 create index if not exists idx_visitors_lead_id on public.visitors(lead_id);
 create index if not exists idx_leads_project_id_created_at on public.leads(project_id, created_at desc);
-create index if not exists idx_visitors_project_id on public.visitors(project_id);
-create index if not exists idx_projects_user_id on public.projects(user_id);

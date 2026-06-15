@@ -26,8 +26,7 @@ export function ThemeToggle() {
       className={cn(
         "flex h-9 w-9 items-center justify-center rounded-md border transition-impeccable",
         "border-border bg-bg-soft/50 text-text-secondary hover:text-text",
-        "dark:border-border dark:bg-bg-soft/50",
-        "light:border-neutral-200 light:bg-white light:text-text-secondary"
+        "dark:border-border dark:bg-bg-soft/50"
       )}
       aria-label="Toggle theme"
     >

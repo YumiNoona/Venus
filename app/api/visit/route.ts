@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { hashIP } from "@/lib/utils/privacy";
 
 export async function POST(request: NextRequest) {
   const { projectId } = (await request.json().catch(() => ({}))) as {
@@ -22,16 +23,20 @@ export async function POST(request: NextRequest) {
   const ip = ipHeader ? ipHeader.split(",")[0]?.trim() ?? "unknown" : "unknown";
   const device = request.headers.get("user-agent") || "unknown";
 
-  const { hashIP } = await import("@/lib/utils/privacy");
-  const hashedIp = await hashIP(ip || "unknown");
+  const hashedIp = await hashIP(ip);
 
-  await (supabase as any)
+  const { error } = await supabase
     .from("visitors")
     .insert({
       project_id: projectId,
       ip_hash: hashedIp,
       device
     });
+
+  if (error) {
+    console.error("Failed to record visit:", error.message);
+    return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }

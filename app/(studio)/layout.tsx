@@ -9,7 +9,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
     <ThemeProvider attribute="class" defaultTheme="dark" storageKey="venus-admin-theme">
       <div className="flex min-h-screen bg-bg transition-colors duration-200">
         <Sidebar />
-        <main className="flex-1 lg:ml-64 relative">
+        <main className="flex-1 lg:ml-80 relative">
           {children}
         </main>
       </div>

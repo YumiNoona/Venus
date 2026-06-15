@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils"
 
 export const runtime = "edge"
 export const dynamic = "force-dynamic"
-export const revalidate = 0 // Disable cache for debugging update issues
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>
@@ -67,7 +66,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   if (error || !project || !project.published) return notFound()
 
-  const { data: sub } = await (supabase as any)
+  const { data: sub } = await supabase
     .from("subscriptions")
     .select("plan")
     .eq("user_id", project.user_id)
@@ -130,7 +129,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 { label: "Architect", value: project.architect || "N/A", icon: User },
                 { label: "Area", value: project.area || "N/A", icon: Maximize },
                 { label: "Year", value: project.year || "N/A", icon: Calendar },
-              ].map((item, i) => (
+              ].map((item) => (
                 <Card key={item.label} className="p-6 bg-bg-soft border-border hover:border-text-secondary transition-colors space-y-4 group">
                   <div className="h-10 w-10 rounded-xl bg-bg border border-border flex items-center justify-center group-hover:scale-110 group-hover:bg-bg-soft transition-all">
                      <item.icon className="h-5 w-5 text-accent" />

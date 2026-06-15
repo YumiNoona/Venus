@@ -2,24 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { User } from "@supabase/supabase-js";
 import { Button } from "./ui";
 import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    let ignore = false;
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     
     const supabase = createBrowserSupabaseClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    supabase.auth.getUser().then(({ data }) => {
+      if (!ignore) setUser(data.user);
+    });
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      ignore = true;
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (

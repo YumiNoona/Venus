@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase-browser";
 import { Input, Textarea, Label, Button, Card, Badge, Separator, Switch } from "@/components/ui";
 import { slugify } from "@/lib/slugify";
-import { ArrowLeft, Box, Check, Save, Upload, Cloud, Globe, Lock, AlertCircle, Eye, EyeOff, Copy, RefreshCw } from "lucide-react";
+import { Check, Save, Upload, Cloud, Globe, Lock, AlertCircle, Copy, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { saveProject } from "@/app/(studio)/projects/mutations";
 import { addCustomDomainToVercel, removeCustomDomainFromVercel, verifyDomainStatus } from "@/lib/actions/domains";
@@ -115,12 +115,22 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     }
   }
 
+  const objectUrlsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    return () => {
+      objectUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, []);
+
   // Drag and Drop implementation
   const onDropLight = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
       setThumbnailLightFile(file);
-      setLightPreview(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      objectUrlsRef.current.push(url);
+      setLightPreview(url);
     }
   }, []);
 
@@ -128,7 +138,9 @@ export function ProjectForm({ initial }: ProjectFormProps) {
     const file = acceptedFiles[0];
     if (file) {
       setThumbnailDarkFile(file);
-      setDarkPreview(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      objectUrlsRef.current.push(url);
+      setDarkPreview(url);
     }
   }, []);
 
@@ -153,9 +165,11 @@ export function ProjectForm({ initial }: ProjectFormProps) {
 
   const generatePassword = () => {
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const array = new Uint8Array(8);
+    crypto.getRandomValues(array);
     let pass = "";
     for (let i = 0; i < 8; i++) {
-        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        pass += chars.charAt(array[i] % chars.length);
     }
     handleChange("password", pass);
   };
@@ -190,6 +204,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
 
     let projectId = values.id;
     const tempId = projectId || crypto.randomUUID();
+    if (!projectId) projectId = tempId;
 
     let updatedLightUrl = values.thumbnail_light;
     let updatedDarkUrl = values.thumbnail_dark;
@@ -320,7 +335,7 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                     className="pl-10 font-mono text-xs bg-bg-soft border-border"
                   />
                 </div>
-                {values.custom_domain && initial?.custom_domain === values.custom_domain && (
+                {values.custom_domain && isEdit && (
                   <Button 
                     type="button" 
                     onClick={handleVerifyDomain} 
@@ -754,9 +769,9 @@ export function ProjectForm({ initial }: ProjectFormProps) {
                    </Button>
                  </>
                )}
-               <Button
-                 onClick={(e) => handleSubmit(e as any)}
-                 variant={saved ? "ghost" : "primary"}
+                <Button
+                  type="submit"
+                  variant={saved ? "ghost" : "primary"}
                  disabled={saving || !isValid || !isDirty}
                  className={cn(
                    "w-full h-11 text-[11px] font-black uppercase tracking-[0.2em] transition-all",

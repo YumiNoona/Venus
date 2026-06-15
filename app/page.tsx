@@ -6,7 +6,6 @@ import HeroScene from "@/components/landing/hero-scene";
 import ProblemSection from "@/components/landing/problem-section";
 
 // Dynamically import heavy or secondary sections for better performance
-const ProductWalkthrough = dynamic(() => import("@/components/landing/product-walkthrough"), { ssr: true });
 const Capabilities = dynamic(() => import("@/components/landing/capabilities"), { ssr: true });
 const InterfaceShowcase = dynamic(() => import("@/components/landing/interface-showcase"), { ssr: true });
 const DataInsights = dynamic(() => import("@/components/landing/data-insights"), { ssr: true });

@@ -1,8 +1,8 @@
 import { requireUser } from "@/lib/auth";
 import { Suspense } from "react";
-import { Button, Card, Badge, Separator } from "@/components/ui";
+import { Button } from "@/components/ui";
 import Link from "next/link";
-import { Plus, Users, Calendar, ArrowRight, BarChart3, Loader2 } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { DashboardStatsWrapper } from "./stats-wrapper";
 import { RecentLeadsWrapper } from "./leads-wrapper";
 import { ActivityTrendWrapper } from "./trend-wrapper";
@@ -17,27 +17,27 @@ export default async function DashboardPage() {
     <div className="page-container space-y-12 pb-20">
       <TourInitializer />
       {/* Header - Renders Instantly */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-1">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="text-4xl font-black tracking-tighter text-foreground italic uppercase">
             Dashboard
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground font-medium">
             Performance overview for your architectural visualizations.
           </p>
         </div>
         <Link href="/projects/new">
-          <Button variant="primary" size="sm" className="gap-2 tour-new-project">
-            <Plus className="h-4 w-4" />
+          <Button variant="primary" size="lg" className="gap-3 tour-new-project px-8 py-6 text-base font-black uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95">
+            <Plus className="h-5 w-5" />
             New Project
           </Button>
         </Link>
       </header>
 
       {/* Metrics section - Progressive Load */}
-      <section className="space-y-4 tour-metrics">
-        <div className="flex items-center gap-2 px-1">
-           <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <section className="space-y-6 tour-metrics">
+        <div className="flex items-center gap-3 px-1 border-b border-border pb-4">
+           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
              Growth Metrics
            </h2>
         </div>
@@ -46,15 +46,15 @@ export default async function DashboardPage() {
         </Suspense>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 px-1">
         {/* Recent Leads - Progressive Load */}
-        <section className="lg:col-span-2 space-y-4 tour-recent-leads">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Latest Inquiries</h2>
+        <section className="lg:col-span-2 space-y-6 tour-recent-leads">
+          <div className="flex items-center justify-between border-b border-border pb-4">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">Latest Inquiries</h2>
             </div>
             <Link href="/leads">
-               <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold tracking-widest gap-1">
+               <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold tracking-[0.2em] gap-2 hover:bg-gold/10 hover:text-gold transition-all">
                  View All <ArrowRight className="h-3 w-3" />
                </Button>
             </Link>
@@ -66,9 +66,9 @@ export default async function DashboardPage() {
         </section>
 
         {/* Visitor Activity Trend - Progressive Load */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Activity Trend</h2>
+        <section className="space-y-6">
+          <div className="flex items-center gap-3 border-b border-border pb-4">
+            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">Activity Trend</h2>
           </div>
           <Suspense fallback={<CardSkeleton />}>
             <ActivityTrendWrapper />

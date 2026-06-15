@@ -1,6 +1,5 @@
 import { requireUser } from "@/lib/auth";
 export const dynamic = "force-dynamic";
-import { Sidebar } from "@/components/sidebar";
 import { ProjectForm } from "@/components/project-form";
 
 export default async function NewProjectPage() {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Lock, Key, Mail, User, Phone, CheckCircle2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Sparkles, ArrowRight, Lock, Mail, User, CheckCircle2 } from "lucide-react";
 import { Button, Input, Label, Card } from "@/components/ui";
 import { verifyProjectPassword } from "@/app/p/[slug]/actions";
 import { submitLead } from "@/lib/actions/leads";
@@ -38,12 +38,16 @@ export function ExperienceGate({
   const [password, setPassword] = useState("");
 
   const storageKey = `venus_access_${projectId}`;
+  const accessTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     const access = localStorage.getItem(storageKey);
     if (rememberVisitor && access === "true") {
       setHasAccess(true);
     }
+    return () => {
+      if (accessTimerRef.current) clearTimeout(accessTimerRef.current);
+    };
   }, [projectId, rememberVisitor, storageKey]);
 
   const handleEnterClick = () => {
@@ -59,8 +63,10 @@ export function ExperienceGate({
     if (rememberVisitor) {
       localStorage.setItem(storageKey, "true");
     }
-    setTimeout(() => {
-      window.open(streamUrl, "_blank");
+    // Open the stream URL synchronously to comply with popup blockers
+    window.open(streamUrl, "_blank", "noopener,noreferrer");
+    accessTimerRef.current = setTimeout(() => {
+      // UI transition only — the popup was already opened above
     }, 1000);
   };
 

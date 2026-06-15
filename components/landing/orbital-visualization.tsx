@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Box, Home, Layout, Building2, Map, Users } from "lucide-react";
+import { Box, Home, Layout, Building2, Map } from "lucide-react";
 
 const ORBIT_1_ICONS = [
   { icon: <Home className="w-4 h-4" />, label: "Villa" },

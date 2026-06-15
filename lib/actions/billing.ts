@@ -10,7 +10,7 @@ export async function getSubscription() {
 
   if (!user) return null
 
-  const { data: subscription } = await (supabase as any)
+  const { data: subscription } = await supabase
     .from("subscriptions")
     .select("*")
     .eq("user_id", user.id)
@@ -18,7 +18,7 @@ export async function getSubscription() {
 
   if (!subscription) {
     // Create default free subscription if none exists
-    const { data: newSub } = await (supabase as any)
+    const { data: newSub } = await supabase
       .from("subscriptions")
       .insert({
         user_id: user.id,
@@ -44,7 +44,7 @@ export async function updateSubscription(plan: PlanType) {
 
   const features = PLAN_FEATURES[plan]
   
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("subscriptions")
     .update({ 
       plan, 

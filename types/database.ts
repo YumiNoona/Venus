@@ -210,6 +210,82 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          plan: string
+          credits: number
+          projects_used: number
+          status: string
+          current_period_end: string | null
+          created_at: string | null
+          plan_updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan?: string
+          credits?: number
+          projects_used?: number
+          status?: string
+          current_period_end?: string | null
+          created_at?: string | null
+          plan_updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plan?: string
+          credits?: number
+          projects_used?: number
+          status?: string
+          current_period_end?: string | null
+          created_at?: string | null
+          plan_updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      slug_redirects: {
+        Row: {
+          id: string
+          old_slug: string
+          new_slug: string
+          project_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          old_slug: string
+          new_slug: string
+          project_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          old_slug?: string
+          new_slug?: string
+          project_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slug_redirects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -49,6 +49,7 @@ export default function SignupPage() {
         return;
       }
 
+      setLoading(false);
       router.push("/verify-email");
       router.refresh();
     } catch (err) {

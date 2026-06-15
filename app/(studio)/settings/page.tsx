@@ -1,4 +1,4 @@
-import { requireUser, getUserProfile } from "@/lib/auth";
+import { getUserProfile } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 import { AccountSettings } from "./account-settings";
 import { getSubscription } from "@/lib/actions/billing";
