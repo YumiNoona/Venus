@@ -3,23 +3,15 @@
 @tailwind utilities;
 
 :root {
-  /* --- Vercel/Obsidian Theme Tokens --- */
   --bg: 0 0% 100%;
   --bg-soft: 0 0% 98%;
   --bg-primary: #ffffff;
-  --bg-secondary: #f9f9f9;
-  --card-bg: #ffffff;
   --border: 0 0% 90%;
-  --border-subtle: rgba(0, 0, 0, 0.05);
-
   --text: 0 0% 7%;
   --text-secondary: 0 0% 45%;
   --text-primary: #111111;
-
-  --accent-gold: 42 58% 60%; 
-  --accent-violet: 258 92% 60%;
-
-  /* shadcn compatible tokens (using HSL) */
+  --accent: 258 92% 60%;
+  --gold: 42 58% 60%;
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
   --card: 0 0% 100%;
@@ -30,9 +22,7 @@
   --secondary-foreground: 0 0% 9%;
   --muted: 0 0% 96.1%;
   --muted-foreground: 0 0% 45.1%;
-  --accent: 258 92% 60%;
   --accent-foreground: 0 0% 9%;
-  --border: 0 0% 89.8%;
   --input: 0 0% 89.8%;
   --ring: 0 0% 3.9%;
 }
@@ -41,15 +31,10 @@
   --bg: 0 0% 0%;
   --bg-soft: 0 0% 4%;
   --bg-primary: #000000;
-  --bg-secondary: #080808;
-  --card-bg: #0c0c0c;
   --border: 0 0% 12%;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-
   --text: 0 0% 98%;
-  --text-secondary: 0 0% 55%;
+  --text-secondary: 0 0% 50%;
   --text-primary: #ffffff;
-
   --background: 0 0% 0%;
   --foreground: 0 0% 98%;
   --card: 0 0% 4%;
@@ -62,222 +47,59 @@
   --muted-foreground: 0 0% 63.9%;
   --accent: 258 90% 66%;
   --accent-foreground: 0 0% 98%;
-  --border: 0 0% 12%;
   --input: 0 0% 12%;
   --ring: 0 0% 83.1%;
 }
 
 @layer base {
   body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: 'Inter', -apple-system, sans-serif;
+    @apply bg-bg text-text font-sans antialiased min-h-screen text-sm;
   }
 }
 
-/* --- Project Presentation Themes (These FORCE override both Light & Dark modes when applied directly) --- */
 .theme-minimal {
-  --bg: 0 0% 100%;
-  --bg-soft: 0 0% 98%;
-  --text: 0 0% 7%;
-  --text-secondary: 0 0% 40%;
-  --border: 0 0% 92%;
-  --primary: 0 0% 0%;
-  --accent: 0 0% 7%;
+  --bg: 0 0% 100%; --bg-soft: 0 0% 98%; --text: 0 0% 7%;
+  --text-secondary: 0 0% 40%; --border: 0 0% 92%; --accent: 0 0% 7%;
 }
-
 .dark .theme-minimal, .theme-minimal.dark {
-  --bg: 0 0% 0%;
-  --bg-soft: 0 0% 4%;
-  --text: 0 0% 93%;
-  --text-secondary: 0 0% 53%;
-  --border: 0 0% 13%;
-  --primary: 0 0% 100%;
-  --accent: 0 0% 100%;
+  --bg: 0 0% 0%; --bg-soft: 0 0% 4%; --text: 0 0% 93%;
+  --text-secondary: 0 0% 53%; --border: 0 0% 13%; --accent: 0 0% 100%;
 }
-
-.theme-glass {
-  --bg: 0 0% 0%;
-  --bg-soft: 0 0% 10%;
-  --text: 0 0% 100%;
-  --text-secondary: 0 0% 60%;
-  --border: 0 0% 15%;
-  --primary: 0 0% 100%;
-  --accent: 0 0% 100%;
-}
-
-/* Glass mode ignores user's system preference because it's a fixed dark/glass aesthetic */
-.dark .theme-glass, .light .theme-glass {
-  --bg: 0 0% 0%;
-  --bg-soft: 0 0% 10%;
-  --text: 0 0% 100%;
-  --text-secondary: 0 0% 60%;
-  --border: 0 0% 15%;
-  --primary: 0 0% 100%;
-  --accent: 0 0% 100%;
-}
-
-.theme-architect {
-  --bg: 0 0% 2%;
-  --bg-soft: 0 0% 4%;
-  --text: 0 0% 96%;
-  --text-secondary: 0 0% 53%;
-  --border: 0 0% 15%;
-  --primary: 40 45% 60%;
-  --accent: 40 45% 60%;
-}
-
-/* Architect mode is always a dark/gold aesthetic */
-.dark .theme-architect, .light .theme-architect {
-  --bg: 0 0% 2%;
-  --bg-soft: 0 0% 4%;
-  --text: 0 0% 96%;
-  --text-secondary: 0 0% 53%;
-  --border: 0 0% 15%;
-  --primary: 40 45% 60%;
-  --accent: 40 45% 60%;
-}
-
-@layer base {
-  body {
-    background: var(--bg);
-    color: var(--text);
-    @apply font-sans antialiased min-h-screen text-sm;
-    transition: background var(--motion-normal) var(--ease-standard);
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-[color:var(--text)];
-  }
-}
+.theme-glass { --bg: 0 0% 0%; --bg-soft: 0 0% 10%; --text: 0 0% 100%; --text-secondary: 0 0% 60%; --border: 0 0% 15%; --accent: 0 0% 100%; }
+.dark .theme-glass, .light .theme-glass { --bg: 0 0% 0%; --bg-soft: 0 0% 10%; --text: 0 0% 100%; --text-secondary: 0 0% 60%; --border: 0 0% 15%; --accent: 0 0% 100%; }
+.theme-architect { --bg: 0 0% 2%; --bg-soft: 0 0% 4%; --text: 0 0% 96%; --text-secondary: 0 0% 53%; --border: 0 0% 15%; --accent: 40 45% 60%; }
+.dark .theme-architect, .light .theme-architect { --bg: 0 0% 2%; --bg-soft: 0 0% 4%; --text: 0 0% 96%; --text-secondary: 0 0% 53%; --border: 0 0% 15%; --accent: 40 45% 60%; }
 
 @layer utilities {
-  /* --- Supabase-Style Grid Background --- */
   .bg-grid {
-    background-image: radial-gradient(
-      rgba(255, 255, 255, 0.05) 1px,
-      transparent 1px
-    );
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
     background-size: 24px 24px;
   }
-
-  .light .bg-grid {
-    background-image: radial-gradient(
-      rgba(0, 0, 0, 0.05) 1px,
-      transparent 1px
-    );
-  }
-
-  /* --- Micro-Interactions --- */
-  .hover-lift {
-    @apply transition-transform duration-200;
-  }
-  .hover-lift:hover {
-    transform: translateY(-2px);
-  }
-
-  .premium-card {
-    @apply bg-[var(--bg-soft)] border border-[var(--border)] rounded-xl p-6 transition-all duration-200 hover:border-neutral-500 hover:-translate-y-1;
-  }
-
-  .glass {
-    background-color: hsla(var(--glass-bg));
-    backdrop-filter: blur(12px) saturate(180%);
-    border: 1px solid hsla(var(--glass-border));
-  }
-
-  .glass-interactive {
-    @apply glass transition-all duration-200;
-  }
-
-  .glass-interactive:hover {
-    background-color: hsla(var(--glass-bg), 0.6);
-    border-color: hsla(var(--glass-border), 0.2);
-    transform: translateY(-1px);
-  }
-
-  .blueprint-grid {
-    background-image:
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
   .grid-dots {
     background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
     background-size: 24px 24px;
   }
-
   .glass-ui {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08];
   }
-
-  .glass-card {
-    @apply bg-white/[0.01] backdrop-blur-md border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500;
-  }
-
-  .glow-gold {
-    box-shadow: 0 0 40px rgba(212, 167, 96, 0.1);
-  }
-
-  .glow-violet {
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
-  }
-
-  .btn-premium {
-    @apply rounded-full font-black uppercase tracking-[0.2em] text-[11px] transition-all duration-300;
-  }
-
-  .btn-primary-obs {
-    @apply btn-premium bg-white text-black hover:bg-white/90 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.15)];
-  }
-
-  .btn-secondary-obs {
-    @apply btn-premium bg-transparent text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.02] backdrop-blur-sm active:scale-95;
-  }
-
-  .text-gold {
-    color: #d4a760;
-  }
-
-  .bg-gold {
-    background-color: #d4a760;
-  }
-
-  .border-gold {
-    border-color: #d4a760;
-  }
+  .text-gold { color: hsl(var(--gold)); }
+  .bg-gold { background-color: hsl(var(--gold)); }
+  .border-gold { border-color: hsl(var(--gold)); }
 }
 
 @layer components {
   .page-container {
-    @apply max-w-6xl mx-auto px-6 py-12 w-full animate-in fade-in slide-in-from-bottom-2 duration-500;
+    @apply max-w-7xl mx-auto px-8 py-8 w-full;
   }
 }
 
-/* 4px Scrollbar (Strict) */
-::-webkit-scrollbar {
-  width: 4px;
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
 
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* --- Phone Input Overrides --- */
 .phone-input-container {
-  @apply flex items-center h-14 bg-black/5 dark:bg-black/20 border border-[var(--border)] rounded-md px-3 focus-within:border-[var(--primary)] transition-all;
+  @apply flex items-center h-11 bg-black/5 dark:bg-black/20 border border-[var(--border)] rounded-lg px-3 focus-within:border-[var(--primary)] transition-all;
 }
-
 .PhoneInputInput {
   @apply bg-transparent border-none text-sm text-[var(--text)] w-full outline-none ml-2 !ring-0 !border-none;
 }

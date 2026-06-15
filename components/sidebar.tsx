@@ -34,22 +34,21 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 w-80 border-r border-white/5 bg-black hidden lg:flex flex-col">
+    <aside className="fixed inset-y-0 left-0 z-30 w-56 border-r border-border bg-black hidden lg:flex flex-col">
       {/* Brand */}
-      <div className="h-24 flex items-center justify-between px-8">
-        <Link href="/dashboard" className="flex items-center gap-4 group" prefetch>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold text-xs font-black text-black transition-all group-hover:scale-105 group-active:scale-95 shadow-[0_0_20px_rgba(202,138,4,0.3)]">
+      <div className="h-14 flex items-center px-5 border-b border-border">
+        <Link href="/dashboard" className="flex items-center gap-2.5 group" prefetch>
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-[10px] font-bold text-black">
             V
           </div>
-          <span className="text-xl font-black tracking-tighter text-white italic uppercase">
+          <span className="text-sm font-semibold tracking-tight text-white">
             Venus
           </span>
         </Link>
-        <ThemeToggle />
       </div>
 
       {/* Main Nav */}
-      <nav className="flex-1 px-4 py-8 space-y-2">
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -58,34 +57,31 @@ export function Sidebar() {
               href={item.href}
               prefetch
               className={cn(
-                "group relative flex items-center gap-4 rounded-2xl px-5 py-4 text-base font-bold transition-all duration-300",
+                "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
                 isActive
-                  ? "text-white bg-white/5"
-                  : "text-white/40 hover:bg-white/5 hover:text-white",
+                  ? "text-white bg-white/10"
+                  : "text-white/40 hover:text-white hover:bg-white/5",
                 item.name === "Projects" && "tour-sidebar-projects",
                 item.name === "Leads" && "tour-sidebar-leads"
               )}
             >
               <item.icon className={cn(
-                "h-5 w-5 transition-colors",
-                isActive ? "text-gold" : "text-white/20 group-hover:text-white/60"
+                "h-4 w-4",
+                isActive ? "text-white" : "text-white/30 group-hover:text-white/60"
               )} />
               {item.name}
-              {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-gold rounded-r-full shadow-[0_0_15px_rgba(202,138,4,0.5)]" />
-              )}
             </Link>
           );
         })}
       </nav>
 
       {/* Footer / Sign Out */}
-      <div className="p-6 border-t border-white/5 mt-auto">
+      <div className="p-3 border-t border-border mt-auto">
         <button
           onClick={handleSignOut}
-          className="flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-base font-bold text-white/40 transition-all hover:bg-red-500/10 hover:text-red-400 group"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white/40 transition-all hover:bg-red-500/10 hover:text-red-400"
         >
-          <LogOut className="h-5 w-5 transition-colors text-white/20 group-hover:text-red-400/60" />
+          <LogOut className="h-4 w-4" />
           Sign out
         </button>
       </div>

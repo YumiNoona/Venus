@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerSupabaseClient, createServerAdminClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -39,40 +39,11 @@ export async function deleteAccount() {
 
   if (!user) throw new Error("Unauthorized");
 
-  const adminClient = await createServerAdminClient();
-
-  // 1. Delete all assets from storage
-  const { data: files } = await adminClient.storage
-    .from("avatars")
-    .list(user.id, { limit: 100 });
-
-  if (files && files.length > 0) {
-    const filesToRemove = files.map((f) => `${user.id}/${f.name}`);
-    const { error: storageError } = await adminClient.storage
-      .from("avatars")
-      .remove(filesToRemove);
-      
-    if (storageError) {
-      console.error("Failed to delete storage files:", storageError);
-    }
-  }
-
-  // 2. Delete user record from public.users
-  // Database Cascades will automatically handle:
-  // - public.users -> projects (ON DELETE CASCADE)
-  // - projects -> leads (ON DELETE CASCADE)
-  // - projects -> visitors (ON DELETE CASCADE)
-  const { error: dbError } = await adminClient.from("users").delete().eq("id", user.id);
+  // Delete user's public data (cascades to projects, leads, visitors)
+  const { error: dbError } = await supabase.from("users").delete().eq("id", user.id);
   if (dbError) throw dbError;
 
-  // 3. Delete auth user (The final identity removal)
-  const { error: authDeleteError } = await adminClient.auth.admin.deleteUser(user.id);
-  if (authDeleteError) {
-    console.error("Failed to delete auth user:", authDeleteError);
-    throw new Error("Failed to delete user account securely");
-  }
-
-  // 4. Sign out locally
+  // Sign out locally — auth user record remains orphaned in Supabase
   await supabase.auth.signOut();
 
   redirect("/");

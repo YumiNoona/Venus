@@ -110,16 +110,18 @@ export default function BillingPage() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             {plans.map((plan) => (
-               <Card key={plan.name} className={cn(
-                 "p-8 bg-card border-border relative flex flex-col justify-between transition-all duration-300 hover:border-foreground/20 hover:shadow-2xl hover:shadow-black/5",
-                 plan.popular && "border-foreground/20 ring-1 ring-foreground/20"
-               )}>
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-foreground text-background text-[9px] font-bold uppercase tracking-widest rounded-full shadow-lg z-10">
-                       Most Popular
-                    </div>
-                  )}
+              {plans.map((plan) => (
+                <Card key={plan.name} className={cn(
+                  "p-8 border-border relative flex flex-col justify-between",
+                  plan.popular
+                    ? "bg-gradient-to-b from-foreground/[0.04] to-transparent border-foreground/20 ring-1 ring-foreground/10"
+                    : "bg-card"
+                )}>
+                   {plan.popular && (
+                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-foreground text-background text-[10px] font-semibold tracking-wider rounded-full shadow-lg z-10">
+                        Most Popular
+                     </div>
+                   )}
                   
                   <div className="space-y-8">
                      <div className="space-y-1">

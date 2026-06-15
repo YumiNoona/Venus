@@ -20,23 +20,23 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-primary text-bg hover:brightness-110 active:scale-[0.98]",
-    secondary: "bg-bg-soft text-text hover:bg-bg-soft/80 active:scale-[0.98] border border-border",
-    ghost: "bg-transparent text-text hover:bg-bg-soft active:scale-[0.98]",
-    danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20 active:scale-[0.98] border border-red-500/20",
-    outline: "bg-transparent border border-border text-text hover:bg-bg-soft"
+    primary: "bg-foreground text-background hover:opacity-90",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border",
+    ghost: "text-foreground hover:bg-muted",
+    danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20",
+    outline: "border border-border text-foreground hover:bg-muted"
   };
 
   const sizes = {
     sm: "px-3 py-1.5 text-xs",
-    md: "px-5 py-2.5 text-sm",
-    lg: "px-8 py-3.5 text-base"
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-3 text-base"
   };
 
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100",
+        "inline-flex items-center justify-center rounded-lg font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none",
         variants[variant],
         sizes[size],
         className

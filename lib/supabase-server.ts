@@ -1,5 +1,4 @@
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../types/database";
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
@@ -37,14 +36,5 @@ export async function createServerSupabaseClient() {
       }
     }
   }) as unknown as SupabaseClient<Database>;
-}
-
-export async function createServerAdminClient() {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is missing from environment variables");
-  }
-
-  return createClient<Database>(supabaseUrl, serviceRoleKey);
 }
 
